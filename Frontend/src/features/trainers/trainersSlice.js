@@ -2,23 +2,23 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../../services/api';
 import endpoints from '../../config/endpoints';
 
-export const fetchStudentEvaluations = createAsyncThunk(
-  'studentEvaluations/fetchStudentEvaluations',
+export const fetchTrainers = createAsyncThunk(
+  'trainers/fetchTrainers',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await api.get(endpoints.studentEvaluations.list);
+      const response = await api.get(endpoints.trainers.list);
       return response.data.data || [];
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Error fetching student evaluations');
+      return rejectWithValue(error.response?.data?.message || 'Error fetching trainers');
     }
   }
 );
 
-export const createStudentEvaluation = createAsyncThunk(
-  'studentEvaluations/createStudentEvaluation',
-  async (evaluationData, { rejectWithValue }) => {
+export const createTrainer = createAsyncThunk(
+  'trainers/createTrainer',
+  async (trainerData, { rejectWithValue }) => {
     try {
-      const response = await api.post(endpoints.studentEvaluations.create, evaluationData);
+      const response = await api.post(endpoints.trainers.create, trainerData);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -26,11 +26,11 @@ export const createStudentEvaluation = createAsyncThunk(
   }
 );
 
-export const updateStudentEvaluation = createAsyncThunk(
-  'studentEvaluations/updateStudentEvaluation',
+export const updateTrainer = createAsyncThunk(
+  'trainers/updateTrainer',
   async ({ id, data }, { rejectWithValue }) => {
     try {
-      const response = await api.put(endpoints.studentEvaluations.update(id), data);
+      const response = await api.put(endpoints.trainers.update(id), data);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -38,11 +38,11 @@ export const updateStudentEvaluation = createAsyncThunk(
   }
 );
 
-export const deleteStudentEvaluation = createAsyncThunk(
-  'studentEvaluations/deleteStudentEvaluation',
+export const deleteTrainer = createAsyncThunk(
+  'trainers/deleteTrainer',
   async (id, { rejectWithValue }) => {
     try {
-      await api.delete(endpoints.studentEvaluations.delete(id));
+      await api.delete(endpoints.trainers.delete(id));
       return id;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -50,13 +50,13 @@ export const deleteStudentEvaluation = createAsyncThunk(
   }
 );
 
-const studentEvaluationsSlice = createSlice({
-  name: 'studentEvaluations',
+const trainersSlice = createSlice({
+  name: 'trainers',
   initialState: {
     items: [],
     loading: false,
     error: null,
-    currentStudentEvaluation: null,
+    currentTrainer: null,
     pagination: {
       currentPage: 1,
       totalPages: 1,
@@ -68,17 +68,17 @@ const studentEvaluationsSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
-    setCurrentStudentEvaluation: (state, action) => {
-      state.currentStudentEvaluation = action.payload;
+    setCurrentTrainer: (state, action) => {
+      state.currentTrainer = action.payload;
     },
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchStudentEvaluations.pending, (state) => {
+      .addCase(fetchTrainers.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchStudentEvaluations.fulfilled, (state, action) => {
+      .addCase(fetchTrainers.fulfilled, (state, action) => {
         state.loading = false;
         state.items = action.payload;
         if (action.payload.meta) {
@@ -90,28 +90,28 @@ const studentEvaluationsSlice = createSlice({
           };
         }
       })
-      .addCase(fetchStudentEvaluations.rejected, (state, action) => {
+      .addCase(fetchTrainers.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
-      .addCase(createStudentEvaluation.fulfilled, (state, action) => {
+      .addCase(createTrainer.fulfilled, (state, action) => {
         state.items.push(action.payload);
       })
-      .addCase(updateStudentEvaluation.fulfilled, (state, action) => {
+      .addCase(updateTrainer.fulfilled, (state, action) => {
         const index = state.items.findIndex(
-          (evaluation) => evaluation.id === action.payload.id
+          (trainer) => trainer.id === action.payload.id
         );
         if (index !== -1) {
           state.items[index] = action.payload;
         }
       })
-      .addCase(deleteStudentEvaluation.fulfilled, (state, action) => {
+      .addCase(deleteTrainer.fulfilled, (state, action) => {
         state.items = state.items.filter(
-          (evaluation) => evaluation.id !== action.payload
+          (trainer) => trainer.id !== action.payload
         );
       });
   },
 });
 
-export const { clearError, setCurrentStudentEvaluation } = studentEvaluationsSlice.actions;
-export default studentEvaluationsSlice.reducer; 
+export const { clearError, setCurrentTrainer } = trainersSlice.actions;
+export default trainersSlice.reducer; 

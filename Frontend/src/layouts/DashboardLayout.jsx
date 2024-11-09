@@ -23,6 +23,7 @@ import {
   School as FormationIcon,
   Assignment as EnrollmentIcon,
   Assessment as EvaluationIcon,
+  AssignmentInd as StudentEvaluationIcon,
   Person as TrainerIcon,
   Logout as LogoutIcon,
 } from '@mui/icons-material';
@@ -49,6 +50,7 @@ const DashboardLayout = ({ children }) => {
     { text: 'Formations', icon: <FormationIcon />, path: '/formations' },
     { text: 'Enrollments', icon: <EnrollmentIcon />, path: '/enrollments' },
     { text: 'Evaluations', icon: <EvaluationIcon />, path: '/evaluations' },
+    { text: 'Student Evaluations', icon: <StudentEvaluationIcon />, path: '/student-evaluations' },
     { text: 'Trainers', icon: <TrainerIcon />, path: '/trainers' },
   ];
 
@@ -59,16 +61,21 @@ const DashboardLayout = ({ children }) => {
       <List>
         {menuItems.map((item) => (
           <ListItem
-            button
             key={item.text}
             onClick={() => navigate(item.path)}
+            component="div"
+            sx={{ cursor: 'pointer' }}
           >
             <ListItemIcon>{item.icon}</ListItemIcon>
             <ListItemText primary={item.text} />
           </ListItem>
         ))}
         <Divider />
-        <ListItem button onClick={handleLogout}>
+        <ListItem
+          onClick={handleLogout}
+          component="div"
+          sx={{ cursor: 'pointer' }}
+        >
           <ListItemIcon>
             <LogoutIcon />
           </ListItemIcon>

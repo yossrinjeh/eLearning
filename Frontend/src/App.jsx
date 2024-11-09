@@ -13,6 +13,8 @@ import RoomsList from './pages/rooms/RoomsList';
 import FormationsList from './pages/formations/FormationsList';
 import EnrollmentsList from './pages/enrollments/EnrollmentsList';
 import EvaluationsList from './pages/evaluations/EvaluationsList';
+import StudentEvaluationsList from './pages/studentEvaluations/StudentEvaluationsList';
+import TrainersList from './pages/trainers/TrainersList';
 
 const theme = createTheme({
   palette: {
@@ -23,7 +25,7 @@ const theme = createTheme({
   },
 });
 
-function App() {
+const App = () => {
   return (
     <Provider store={store}>
       <ThemeProvider theme={theme}>
@@ -72,11 +74,27 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/student-evaluations"
+              element={
+                <ProtectedRoute>
+                  <StudentEvaluationsList />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/trainers"
+              element={
+                <ProtectedRoute>
+                  <TrainersList />
+                </ProtectedRoute>
+              }
+            />
           </Routes>
         </Router>
       </ThemeProvider>
     </Provider>
   );
-}
+};
 
 export default App;
