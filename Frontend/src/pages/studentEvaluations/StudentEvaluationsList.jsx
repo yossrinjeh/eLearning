@@ -254,7 +254,7 @@ const StudentEvaluationsList = () => {
           }}
         >
           <StudentEvaluationForm
-            evaluation={selectedEvaluation}
+            studentEvaluation={selectedEvaluation}
             onClose={handleCloseForm}
           />
         </Dialog>

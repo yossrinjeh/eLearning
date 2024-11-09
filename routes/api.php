@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\TrainerController;
 use App\Http\Controllers\Api\EnrollmentController;
 use App\Http\Controllers\Api\EvaluationController;
 use App\Http\Controllers\Api\StudentEvaluationController;
+use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
 
 // Public routes
@@ -24,4 +25,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('enrollments', EnrollmentController::class);
     Route::apiResource('evaluations', EvaluationController::class);
     Route::apiResource('student-evaluations', StudentEvaluationController::class);
+    Route::get('users', [UserController::class, 'index']);
 }); 

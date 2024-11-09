@@ -26,6 +26,16 @@ import DashboardLayout from '../../layouts/DashboardLayout';
 import FormationForm from './FormationForm';
 import PageHeader from '../../components/PageHeader';
 
+const formatDate = (dateString) => {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+};
+
 const FormationsList = () => {
   const dispatch = useDispatch();
   const { items: formations, loading, error, pagination } = useSelector(
@@ -239,8 +249,8 @@ const FormationsList = () => {
                           <Typography fontWeight="medium">{formation.title}</Typography>
                         </TableCell>
                         <TableCell>{formation.description}</TableCell>
-                        <TableCell>{formation.start_date}</TableCell>
-                        <TableCell>{formation.end_date}</TableCell>
+                        <TableCell>{formatDate(formation.start_date)}</TableCell>
+                        <TableCell>{formatDate(formation.end_date)}</TableCell>
                         <TableCell>{formation.duration} days</TableCell>
                         <TableCell>{formation.max_capacity}</TableCell>
                         <TableCell>

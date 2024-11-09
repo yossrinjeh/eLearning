@@ -21,15 +21,29 @@ import {
 } from '@mui/material';
 import { Edit as EditIcon, Delete as DeleteIcon, Search as SearchIcon } from '@mui/icons-material';
 import { fetchEnrollments, deleteEnrollment } from '../../features/enrollments/enrollmentsSlice';
+import { fetchFormations } from '../../features/formations/formationsSlice';
+import { fetchUsers } from '../../features/users/usersSlice';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import EnrollmentForm from './EnrollmentForm';
 import PageHeader from '../../components/PageHeader';
+
+const formatDate = (dateString) => {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+};
 
 const EnrollmentsList = () => {
   const dispatch = useDispatch();
   const { items: enrollments, loading, error, pagination } = useSelector(
     (state) => state.enrollments
   );
+  const formations = useSelector((state) => state.formations.items);
+  const users = useSelector((state) => state.users.items);
   const [openForm, setOpenForm] = useState(false);
   const [selectedEnrollment, setSelectedEnrollment] = useState(null);
   const [page, setPage] = useState(0);
@@ -38,6 +52,8 @@ const EnrollmentsList = () => {
 
   useEffect(() => {
     dispatch(fetchEnrollments());
+    dispatch(fetchFormations());
+    dispatch(fetchUsers());
   }, [dispatch, page, rowsPerPage]);
 
   const handleEdit = (enrollment) => {
@@ -78,6 +94,16 @@ const EnrollmentsList = () => {
       default:
         return 'default';
     }
+  };
+
+  const getFormationTitle = (formationId) => {
+    const formation = formations.find(f => f.id === formationId);
+    return formation ? formation.title : 'Unknown Formation';
+  };
+
+  const getUserFullName = (userId) => {
+    const user = users.find(u => u.id === userId);
+    return user ? `${user.firstname} ${user.lastname}` : 'Unknown User';
   };
 
   return (
@@ -168,9 +194,11 @@ const EnrollmentsList = () => {
                         }}
                       >
                         <TableCell>
-                          <Typography fontWeight="medium">{enrollment.formation_id}</Typography>
+                          <Typography fontWeight="medium">
+                            {getFormationTitle(enrollment.formation_id)}
+                          </Typography>
                         </TableCell>
-                        <TableCell>{enrollment.user_id}</TableCell>
+                        <TableCell>{getUserFullName(enrollment.user_id)}</TableCell>
                         <TableCell>
                           <Chip
                             label={enrollment.status}
@@ -179,7 +207,7 @@ const EnrollmentsList = () => {
                             sx={{ fontWeight: 'medium' }}
                           />
                         </TableCell>
-                        <TableCell>{enrollment.enrollment_date}</TableCell>
+                        <TableCell>{formatDate(enrollment.enrollment_date)}</TableCell>
                         <TableCell>
                           <Stack direction="row" spacing={1}>
                             <IconButton

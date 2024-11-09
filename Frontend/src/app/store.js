@@ -6,6 +6,7 @@ import enrollmentsReducer from '../features/enrollments/enrollmentsSlice';
 import evaluationsReducer from '../features/evaluations/evaluationsSlice';
 import studentEvaluationsReducer from '../features/studentEvaluations/studentEvaluationsSlice';
 import trainersReducer from '../features/trainers/trainersSlice';
+import usersReducer from '../features/users/usersSlice';
 
 export const store = configureStore({
   reducer: {
@@ -16,6 +17,7 @@ export const store = configureStore({
     evaluations: evaluationsReducer,
     studentEvaluations: studentEvaluationsReducer,
     trainers: trainersReducer,
+    users: usersReducer,
   },
 });
 

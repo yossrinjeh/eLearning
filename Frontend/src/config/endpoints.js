@@ -61,6 +61,15 @@ export const endpoints = {
     update: (id) => `${BASE_URL}/trainers/${id}`,
     delete: (id) => `${BASE_URL}/trainers/${id}`,
   },
+
+  // Users endpoints
+  users: {
+    list: `${BASE_URL}/users`,
+    create: `${BASE_URL}/users`,
+    get: (id) => `${BASE_URL}/users/${id}`,
+    update: (id) => `${BASE_URL}/users/${id}`,
+    delete: (id) => `${BASE_URL}/users/${id}`,
+  },
 };
 
 export default endpoints; 

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   DialogTitle,
   DialogContent,
@@ -8,11 +8,24 @@ import {
   TextField,
   Box,
   Grid,
+  MenuItem,
+  IconButton,
+  Typography,
+  Divider,
+  FormControl,
+  InputLabel,
+  Select,
 } from '@mui/material';
+import { Close as CloseIcon } from '@mui/icons-material';
 import { createStudentEvaluation, updateStudentEvaluation } from '../../features/studentEvaluations/studentEvaluationsSlice';
+import { fetchEvaluations } from '../../features/evaluations/evaluationsSlice';
+import { fetchUsers } from '../../features/users/usersSlice';
 
-const StudentEvaluationForm = ({ evaluation, onClose }) => {
+const StudentEvaluationForm = ({ studentEvaluation, onClose }) => {
   const dispatch = useDispatch();
+  const evaluations = useSelector((state) => state.evaluations.items);
+  const users = useSelector((state) => state.users.items);
+  
   const [formData, setFormData] = useState({
     evaluation_id: '',
     user_id: '',
@@ -21,15 +34,20 @@ const StudentEvaluationForm = ({ evaluation, onClose }) => {
   });
 
   useEffect(() => {
-    if (evaluation) {
+    dispatch(fetchEvaluations());
+    dispatch(fetchUsers());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (studentEvaluation) {
       setFormData({
-        evaluation_id: evaluation.evaluation_id || '',
-        user_id: evaluation.user_id || '',
-        score: evaluation.score || '',
-        comments: evaluation.comments || '',
+        evaluation_id: studentEvaluation.evaluation_id || '',
+        user_id: studentEvaluation.user_id || '',
+        score: studentEvaluation.score || '',
+        comments: studentEvaluation.comments || '',
       });
     }
-  }, [evaluation]);
+  }, [studentEvaluation]);
 
   const handleChange = (e) => {
     setFormData({
@@ -40,8 +58,8 @@ const StudentEvaluationForm = ({ evaluation, onClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const action = evaluation
-      ? await dispatch(updateStudentEvaluation({ id: evaluation.id, data: formData }))
+    const action = studentEvaluation
+      ? await dispatch(updateStudentEvaluation({ id: studentEvaluation.id, data: formData }))
       : await dispatch(createStudentEvaluation(formData));
 
     if (!action.error) {
@@ -51,65 +69,118 @@ const StudentEvaluationForm = ({ evaluation, onClose }) => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <DialogTitle>
-        {evaluation ? 'Edit Student Evaluation' : 'Add New Student Evaluation'}
+      <DialogTitle sx={{ m: 0, p: 2, pb: 1 }}>
+        <Box display="flex" alignItems="center" justifyContent="space-between">
+          <Typography variant="h6" component="div" fontWeight="bold">
+            {studentEvaluation ? 'Edit Student Evaluation' : 'Add New Student Evaluation'}
+          </Typography>
+          <IconButton
+            aria-label="close"
+            onClick={onClose}
+            sx={{
+              color: 'text.secondary',
+              '&:hover': { bgcolor: 'grey.100' },
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </Box>
       </DialogTitle>
-      <DialogContent>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 2 }}>
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                required
-                fullWidth
-                label="Evaluation ID"
+      <Divider />
+      <DialogContent sx={{ p: 3 }}>
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={6}>
+            <FormControl fullWidth required>
+              <InputLabel>Evaluation</InputLabel>
+              <Select
                 name="evaluation_id"
-                type="number"
                 value={formData.evaluation_id}
                 onChange={handleChange}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                required
-                fullWidth
-                label="Student ID"
+                label="Evaluation"
+                sx={{ borderRadius: 2 }}
+              >
+                {evaluations.map((evaluation) => (
+                  <MenuItem key={evaluation.id} value={evaluation.id}>
+                    {evaluation.title}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <FormControl fullWidth required>
+              <InputLabel>Student</InputLabel>
+              <Select
                 name="user_id"
-                type="number"
                 value={formData.user_id}
                 onChange={handleChange}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                required
-                fullWidth
-                label="Score"
-                name="score"
-                type="number"
-                inputProps={{ step: "0.1", min: "0", max: "100" }}
-                value={formData.score}
-                onChange={handleChange}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                required
-                fullWidth
-                label="Comments"
-                name="comments"
-                multiline
-                rows={3}
-                value={formData.comments}
-                onChange={handleChange}
-              />
-            </Grid>
+                label="Student"
+                sx={{ borderRadius: 2 }}
+              >
+                {users.map((user) => (
+                  <MenuItem key={user.id} value={user.id}>
+                    {user.firstname} {user.lastname}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
           </Grid>
-        </Box>
+          <Grid item xs={12}>
+            <TextField
+              required
+              fullWidth
+              label="Score"
+              name="score"
+              type="number"
+              value={formData.score}
+              onChange={handleChange}
+              InputProps={{
+                sx: { borderRadius: 2 },
+                inputProps: { min: 0, max: 100 }
+              }}
+              helperText="Score should be between 0 and 100"
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              required
+              fullWidth
+              label="Comments"
+              name="comments"
+              value={formData.comments}
+              onChange={handleChange}
+              multiline
+              rows={3}
+              InputProps={{
+                sx: { borderRadius: 2 }
+              }}
+            />
+          </Grid>
+        </Grid>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
-        <Button type="submit" variant="contained">
-          {evaluation ? 'Update' : 'Create'}
+      <Divider />
+      <DialogActions sx={{ p: 2.5 }}>
+        <Button
+          onClick={onClose}
+          variant="outlined"
+          sx={{
+            borderRadius: 2,
+            textTransform: 'none',
+            fontWeight: 'medium',
+          }}
+        >
+          Cancel
+        </Button>
+        <Button
+          type="submit"
+          variant="contained"
+          sx={{
+            borderRadius: 2,
+            textTransform: 'none',
+            fontWeight: 'medium',
+          }}
+        >
+          {studentEvaluation ? 'Update Evaluation' : 'Create Evaluation'}
         </Button>
       </DialogActions>
     </form>

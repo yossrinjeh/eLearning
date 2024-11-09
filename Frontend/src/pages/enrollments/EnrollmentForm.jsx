@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   DialogTitle,
   DialogContent,
@@ -12,18 +12,32 @@ import {
   IconButton,
   Typography,
   Divider,
+  FormControl,
+  InputLabel,
+  Select,
 } from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';
 import { createEnrollment, updateEnrollment } from '../../features/enrollments/enrollmentsSlice';
+import { fetchFormations } from '../../features/formations/formationsSlice';
+import { fetchUsers } from '../../features/users/usersSlice';
 
 const EnrollmentForm = ({ enrollment, onClose }) => {
   const dispatch = useDispatch();
+  const formations = useSelector((state) => state.formations.items);
+  const users = useSelector((state) => state.users.items);
+  
   const [formData, setFormData] = useState({
     formation_id: '',
     user_id: '',
     status: 'pending',
     enrollment_date: new Date().toISOString().split('T')[0],
   });
+
+  useEffect(() => {
+    // Fetch formations and users when component mounts
+    dispatch(fetchFormations());
+    dispatch(fetchUsers());
+  }, [dispatch]);
 
   useEffect(() => {
     if (enrollment) {
@@ -77,32 +91,40 @@ const EnrollmentForm = ({ enrollment, onClose }) => {
       <DialogContent sx={{ p: 3 }}>
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6}>
-            <TextField
-              required
-              fullWidth
-              label="Formation ID"
-              name="formation_id"
-              type="number"
-              value={formData.formation_id}
-              onChange={handleChange}
-              InputProps={{
-                sx: { borderRadius: 2 }
-              }}
-            />
+            <FormControl fullWidth required>
+              <InputLabel>Formation</InputLabel>
+              <Select
+                name="formation_id"
+                value={formData.formation_id}
+                onChange={handleChange}
+                label="Formation"
+                sx={{ borderRadius: 2 }}
+              >
+                {formations.map((formation) => (
+                  <MenuItem key={formation.id} value={formation.id}>
+                    {formation.title}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
-              required
-              fullWidth
-              label="User ID"
-              name="user_id"
-              type="number"
-              value={formData.user_id}
-              onChange={handleChange}
-              InputProps={{
-                sx: { borderRadius: 2 }
-              }}
-            />
+            <FormControl fullWidth required>
+              <InputLabel>Student</InputLabel>
+              <Select
+                name="user_id"
+                value={formData.user_id}
+                onChange={handleChange}
+                label="Student"
+                sx={{ borderRadius: 2 }}
+              >
+                {users.map((user) => (
+                  <MenuItem key={user.id} value={user.id}>
+                    {user.firstname} {user.lastname}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
