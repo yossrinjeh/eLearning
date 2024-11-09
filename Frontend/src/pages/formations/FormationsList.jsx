@@ -20,6 +20,7 @@ import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import { fetchFormations, deleteFormation } from '../../features/formations/formationsSlice';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import FormationForm from './FormationForm';
+import PageHeader from '../../components/PageHeader';
 
 const FormationsList = () => {
   const dispatch = useDispatch();
@@ -64,86 +65,80 @@ const FormationsList = () => {
 
   return (
     <DashboardLayout>
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" gutterBottom>
-          Formations
-        </Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => setOpenForm(true)}
-        >
-          Add New Formation
-        </Button>
-      </Box>
-
-      {loading ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-          <CircularProgress />
-        </Box>
-      ) : error ? (
-        <Typography color="error">{error}</Typography>
-      ) : (
-        <>
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Title</TableCell>
-                  <TableCell>Description</TableCell>
-                  <TableCell>Start Date</TableCell>
-                  <TableCell>End Date</TableCell>
-                  <TableCell>Duration</TableCell>
-                  <TableCell>Capacity</TableCell>
-                  <TableCell>Status</TableCell>
-                  <TableCell>Actions</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {Array.isArray(formations) && formations.length > 0 ? (
-                  formations.map((formation) => (
-                    <TableRow key={formation.id}>
-                      <TableCell>{formation.title}</TableCell>
-                      <TableCell>{formation.description}</TableCell>
-                      <TableCell>{formation.start_date}</TableCell>
-                      <TableCell>{formation.end_date}</TableCell>
-                      <TableCell>{formation.duration} days</TableCell>
-                      <TableCell>{formation.max_capacity}</TableCell>
-                      <TableCell>{formation.status}</TableCell>
-                      <TableCell>
-                        <IconButton onClick={() => handleEdit(formation)}>
-                          <EditIcon />
-                        </IconButton>
-                        <IconButton onClick={() => handleDelete(formation.id)}>
-                          <DeleteIcon />
-                        </IconButton>
+      <Box sx={{ width: '100%' }}>
+        <PageHeader 
+          title="Formations" 
+          onAdd={() => setOpenForm(true)} 
+        />
+        
+        {loading ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+            <CircularProgress />
+          </Box>
+        ) : error ? (
+          <Typography color="error">{error}</Typography>
+        ) : (
+          <>
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Title</TableCell>
+                    <TableCell>Description</TableCell>
+                    <TableCell>Start Date</TableCell>
+                    <TableCell>End Date</TableCell>
+                    <TableCell>Duration</TableCell>
+                    <TableCell>Capacity</TableCell>
+                    <TableCell>Status</TableCell>
+                    <TableCell>Actions</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {Array.isArray(formations) && formations.length > 0 ? (
+                    formations.map((formation) => (
+                      <TableRow key={formation.id}>
+                        <TableCell>{formation.title}</TableCell>
+                        <TableCell>{formation.description}</TableCell>
+                        <TableCell>{formation.start_date}</TableCell>
+                        <TableCell>{formation.end_date}</TableCell>
+                        <TableCell>{formation.duration} days</TableCell>
+                        <TableCell>{formation.max_capacity}</TableCell>
+                        <TableCell>{formation.status}</TableCell>
+                        <TableCell>
+                          <IconButton onClick={() => handleEdit(formation)}>
+                            <EditIcon />
+                          </IconButton>
+                          <IconButton onClick={() => handleDelete(formation.id)}>
+                            <DeleteIcon />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={8} align="center">
+                        No formations available
                       </TableCell>
                     </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={8} align="center">
-                      No formations available
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <TablePagination
-            component="div"
-            count={pagination.totalItems}
-            page={page}
-            onPageChange={handleChangePage}
-            rowsPerPage={rowsPerPage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
-        </>
-      )}
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <TablePagination
+              component="div"
+              count={pagination.totalItems}
+              page={page}
+              onPageChange={handleChangePage}
+              rowsPerPage={rowsPerPage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+          </>
+        )}
 
-      <Dialog open={openForm} onClose={handleCloseForm} maxWidth="md" fullWidth>
-        <FormationForm formation={selectedFormation} onClose={handleCloseForm} />
-      </Dialog>
+        <Dialog open={openForm} onClose={handleCloseForm} maxWidth="md" fullWidth>
+          <FormationForm formation={selectedFormation} onClose={handleCloseForm} />
+        </Dialog>
+      </Box>
     </DashboardLayout>
   );
 };

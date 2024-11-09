@@ -21,6 +21,7 @@ import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import { fetchEvaluations, deleteEvaluation } from '../../features/evaluations/evaluationsSlice';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import EvaluationForm from './EvaluationForm';
+import PageHeader from '../../components/PageHeader';
 
 const EvaluationsList = () => {
   const dispatch = useDispatch();
@@ -65,88 +66,82 @@ const EvaluationsList = () => {
 
   return (
     <DashboardLayout>
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" gutterBottom>
-          Evaluations
-        </Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => setOpenForm(true)}
-        >
-          Add New Evaluation
-        </Button>
-      </Box>
-
-      {loading ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-          <CircularProgress />
-        </Box>
-      ) : error ? (
-        <Typography color="error">{error}</Typography>
-      ) : (
-        <>
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Formation</TableCell>
-                  <TableCell>Title</TableCell>
-                  <TableCell>Description</TableCell>
-                  <TableCell>Date</TableCell>
-                  <TableCell>Status</TableCell>
-                  <TableCell>Actions</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {Array.isArray(evaluations) && evaluations.length > 0 ? (
-                  evaluations.map((evaluation) => (
-                    <TableRow key={evaluation.id}>
-                      <TableCell>{evaluation.formation_id}</TableCell>
-                      <TableCell>{evaluation.title}</TableCell>
-                      <TableCell>{evaluation.description}</TableCell>
-                      <TableCell>{evaluation.date}</TableCell>
-                      <TableCell>
-                        <Chip
-                          label={evaluation.is_active ? 'Active' : 'Inactive'}
-                          color={evaluation.is_active ? 'success' : 'default'}
-                          size="small"
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <IconButton onClick={() => handleEdit(evaluation)}>
-                          <EditIcon />
-                        </IconButton>
-                        <IconButton onClick={() => handleDelete(evaluation.id)}>
-                          <DeleteIcon />
-                        </IconButton>
+      <Box sx={{ width: '100%' }}>
+        <PageHeader 
+          title="Evaluations" 
+          onAdd={() => setOpenForm(true)} 
+        />
+        
+        {loading ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+            <CircularProgress />
+          </Box>
+        ) : error ? (
+          <Typography color="error">{error}</Typography>
+        ) : (
+          <>
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Formation</TableCell>
+                    <TableCell>Title</TableCell>
+                    <TableCell>Description</TableCell>
+                    <TableCell>Date</TableCell>
+                    <TableCell>Status</TableCell>
+                    <TableCell>Actions</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {Array.isArray(evaluations) && evaluations.length > 0 ? (
+                    evaluations.map((evaluation) => (
+                      <TableRow key={evaluation.id}>
+                        <TableCell>{evaluation.formation_id}</TableCell>
+                        <TableCell>{evaluation.title}</TableCell>
+                        <TableCell>{evaluation.description}</TableCell>
+                        <TableCell>{evaluation.date}</TableCell>
+                        <TableCell>
+                          <Chip
+                            label={evaluation.is_active ? 'Active' : 'Inactive'}
+                            color={evaluation.is_active ? 'success' : 'default'}
+                            size="small"
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <IconButton onClick={() => handleEdit(evaluation)}>
+                            <EditIcon />
+                          </IconButton>
+                          <IconButton onClick={() => handleDelete(evaluation.id)}>
+                            <DeleteIcon />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={6} align="center">
+                        No evaluations available
                       </TableCell>
                     </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={6} align="center">
-                      No evaluations available
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <TablePagination
-            component="div"
-            count={pagination.totalItems}
-            page={page}
-            onPageChange={handleChangePage}
-            rowsPerPage={rowsPerPage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
-        </>
-      )}
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <TablePagination
+              component="div"
+              count={pagination.totalItems}
+              page={page}
+              onPageChange={handleChangePage}
+              rowsPerPage={rowsPerPage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+          </>
+        )}
 
-      <Dialog open={openForm} onClose={handleCloseForm} maxWidth="sm" fullWidth>
-        <EvaluationForm evaluation={selectedEvaluation} onClose={handleCloseForm} />
-      </Dialog>
+        <Dialog open={openForm} onClose={handleCloseForm} maxWidth="sm" fullWidth>
+          <EvaluationForm evaluation={selectedEvaluation} onClose={handleCloseForm} />
+        </Dialog>
+      </Box>
     </DashboardLayout>
   );
 };

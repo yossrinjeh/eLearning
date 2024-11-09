@@ -30,6 +30,7 @@ import {
 import { fetchRooms, deleteRoom } from '../../features/rooms/roomsSlice';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import RoomForm from './RoomForm';
+import PageHeader from '../../components/PageHeader';
 
 const RoomsList = () => {
   const dispatch = useDispatch();
@@ -92,25 +93,10 @@ const RoomsList = () => {
   return (
     <DashboardLayout>
       <Box sx={{ width: '100%' }}>
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            mb: 4,
-          }}
-        >
-          <Typography variant="h4" component="h1" fontWeight="bold">
-            Rooms Management
-          </Typography>
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={() => setOpenForm(true)}
-          >
-            Add New Room
-          </Button>
-        </Box>
+        <PageHeader 
+          title="Rooms" 
+          onAdd={() => setOpenForm(true)} 
+        />
 
         <Box sx={{ mb: 4 }}>
           <TextField
