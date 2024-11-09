@@ -49,16 +49,32 @@ class TrainerController extends Controller
 
     public function update(Request $request, $id)
     {
-        $trainer = TrainerProfile::where('user_id', $id)->firstOrFail();
-        
         $validated = $request->validate([
             'specialities' => 'sometimes|string',
             'experience' => 'sometimes|string',
-            'cv_path' => 'nullable|string'
+            'cv_path' => 'nullable|string',
+            'is_active' => 'sometimes|boolean'
         ]);
 
-        $trainer->update($validated);
-        return new TrainerProfileResource($trainer->load('user'));
+        \DB::beginTransaction();
+        try {
+            if (isset($validated['is_active'])) {
+                $user = User::findOrFail($id);
+                $user->update(['is_active' => $validated['is_active']]);
+            }
+
+            $trainer = TrainerProfile::where('user_id', $id)->firstOrFail();
+            $trainer->update($validated);
+
+            \DB::commit();
+
+            $user = User::with('trainerProfile')->findOrFail($id);
+            return new UserResource($user);
+
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            throw $e;
+        }
     }
 
     public function destroy($id)
