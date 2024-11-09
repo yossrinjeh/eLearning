@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import {
   DialogTitle,
   DialogContent,
@@ -8,79 +8,46 @@ import {
   TextField,
   Box,
   Grid,
-  MenuItem,
   IconButton,
   Typography,
   Divider,
-  FormControl,
-  InputLabel,
-  Select,
-  Input,
+  Switch,
+  FormControlLabel,
+  Link,
 } from '@mui/material';
-import { Close as CloseIcon, CloudUpload as UploadIcon } from '@mui/icons-material';
-import { createTrainer, updateTrainer } from '../../features/trainers/trainersSlice';
-import { fetchUsers } from '../../features/users/usersSlice';
+import { Close as CloseIcon, PictureAsPdf as PdfIcon } from '@mui/icons-material';
+import { updateTrainer } from '../../features/trainers/trainersSlice';
 
 const TrainerForm = ({ trainer, onClose }) => {
   const dispatch = useDispatch();
-  const users = useSelector((state) => state.users.items);
   
   const [formData, setFormData] = useState({
-    user_id: '',
     specialities: '',
     experience: '',
-    cv_file: null,
+    is_active: false,
   });
-
-  const [fileName, setFileName] = useState('');
-
-  useEffect(() => {
-    dispatch(fetchUsers());
-  }, [dispatch]);
 
   useEffect(() => {
     if (trainer) {
       setFormData({
-        user_id: trainer.user_id || '',
-        specialities: trainer.specialities || '',
-        experience: trainer.experience || '',
-        cv_file: null,
+        specialities: trainer.trainer_profile?.specialities || '',
+        experience: trainer.trainer_profile?.experience || '',
+        is_active: trainer.is_active || false,
       });
-      setFileName(trainer.cv_path ? trainer.cv_path.split('/').pop() : '');
     }
   }, [trainer]);
 
   const handleChange = (e) => {
-    if (e.target.name === 'cv_file') {
-      const file = e.target.files[0];
-      setFormData({
-        ...formData,
-        cv_file: file,
-      });
-      setFileName(file ? file.name : '');
-    } else {
-      setFormData({
-        ...formData,
-        [e.target.name]: e.target.value,
-      });
-    }
+    const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+    setFormData({
+      ...formData,
+      [e.target.name]: value,
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    const submitData = new FormData();
-    submitData.append('user_id', formData.user_id);
-    submitData.append('specialities', formData.specialities);
-    submitData.append('experience', formData.experience);
-    if (formData.cv_file) {
-      submitData.append('cv_file', formData.cv_file);
-    }
-
-    const action = trainer
-      ? await dispatch(updateTrainer({ id: trainer.id, data: submitData }))
-      : await dispatch(createTrainer(submitData));
-
+    const action = await dispatch(updateTrainer({ id: trainer.id, data: formData }));
     if (!action.error) {
       onClose();
     }
@@ -91,7 +58,7 @@ const TrainerForm = ({ trainer, onClose }) => {
       <DialogTitle sx={{ m: 0, p: 2, pb: 1 }}>
         <Box display="flex" alignItems="center" justifyContent="space-between">
           <Typography variant="h6" component="div" fontWeight="bold">
-            {trainer ? 'Edit Trainer' : 'Add New Trainer'}
+            Edit Trainer Profile
           </Typography>
           <IconButton
             aria-label="close"
@@ -109,22 +76,25 @@ const TrainerForm = ({ trainer, onClose }) => {
       <DialogContent sx={{ p: 3 }}>
         <Grid container spacing={3}>
           <Grid item xs={12}>
-            <FormControl fullWidth required>
-              <InputLabel>User</InputLabel>
-              <Select
-                name="user_id"
-                value={formData.user_id}
-                onChange={handleChange}
-                label="User"
-                sx={{ borderRadius: 2 }}
-              >
-                {users.map((user) => (
-                  <MenuItem key={user.id} value={user.id}>
-                    {user.firstname} {user.lastname}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+            <Typography variant="subtitle1" gutterBottom>
+              <strong>Name:</strong> {trainer?.firstname} {trainer?.lastname}
+            </Typography>
+            <Typography variant="subtitle1" gutterBottom>
+              <strong>Email:</strong> {trainer?.email}
+            </Typography>
+            {trainer?.trainer_profile?.cv_path && (
+              <Box sx={{ mt: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+                <PdfIcon color="error" />
+                <Link 
+                  href={`https://elearning.test/storage/${trainer.trainer_profile.cv_path}`} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  sx={{ textDecoration: 'none' }}
+                >
+                  View CV
+                </Link>
+              </Box>
+            )}
           </Grid>
           <Grid item xs={12}>
             <TextField
@@ -158,31 +128,17 @@ const TrainerForm = ({ trainer, onClose }) => {
             />
           </Grid>
           <Grid item xs={12}>
-            <Button
-              component="label"
-              variant="outlined"
-              startIcon={<UploadIcon />}
-              sx={{
-                width: '100%',
-                py: 1.5,
-                borderRadius: 2,
-                borderStyle: 'dashed',
-              }}
-            >
-              Upload CV
-              <input
-                type="file"
-                name="cv_file"
-                onChange={handleChange}
-                accept=".pdf,.doc,.docx"
-                style={{ display: 'none' }}
-              />
-            </Button>
-            {fileName && (
-              <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
-                Selected file: {fileName}
-              </Typography>
-            )}
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={formData.is_active}
+                  onChange={handleChange}
+                  name="is_active"
+                  color="success"
+                />
+              }
+              label={formData.is_active ? "Active" : "Inactive"}
+            />
           </Grid>
         </Grid>
       </DialogContent>
@@ -208,7 +164,7 @@ const TrainerForm = ({ trainer, onClose }) => {
             fontWeight: 'medium',
           }}
         >
-          {trainer ? 'Update Trainer' : 'Create Trainer'}
+          Update Trainer
         </Button>
       </DialogActions>
     </form>

@@ -83,7 +83,7 @@ const TrainersList = () => {
       <Box sx={{ width: '100%' }}>
         <PageHeader 
           title="Trainers" 
-          onAdd={() => setOpenForm(true)} 
+          showAddButton={false}
         />
 
         <Box sx={{ mb: 4 }}>
@@ -138,7 +138,7 @@ const TrainersList = () => {
               <Table>
                 <TableHead>
                   <TableRow>
-                    {['Name', 'Email', 'Phone', 'Address', 'Status', 'Actions'].map((header) => (
+                    {['Name', 'Email', 'Phone', 'Specialities', 'Experience', 'Status', 'Actions'].map((header) => (
                       <TableCell 
                         key={header}
                         sx={{ 
@@ -172,7 +172,8 @@ const TrainersList = () => {
                         </TableCell>
                         <TableCell>{trainer.email}</TableCell>
                         <TableCell>{trainer.phone}</TableCell>
-                        <TableCell>{trainer.address}</TableCell>
+                        <TableCell>{trainer.trainer_profile?.specialities || '-'}</TableCell>
+                        <TableCell>{trainer.trainer_profile?.experience || '-'}</TableCell>
                         <TableCell>
                           <Chip
                             label={trainer.is_active ? 'Active' : 'Inactive'}
