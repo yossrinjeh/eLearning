@@ -6,10 +6,14 @@ import {
   DialogActions,
   Button,
   TextField,
-  MenuItem,
   Box,
   Grid,
+  MenuItem,
+  IconButton,
+  Typography,
+  Divider,
 } from '@mui/material';
+import { Close as CloseIcon } from '@mui/icons-material';
 import { createEnrollment, updateEnrollment } from '../../features/enrollments/enrollmentsSlice';
 
 const EnrollmentForm = ({ enrollment, onClose }) => {
@@ -52,68 +56,112 @@ const EnrollmentForm = ({ enrollment, onClose }) => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <DialogTitle>
-        {enrollment ? 'Edit Enrollment' : 'Add New Enrollment'}
-      </DialogTitle>
-      <DialogContent>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 2 }}>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <TextField
-                required
-                fullWidth
-                label="Formation ID"
-                name="formation_id"
-                type="number"
-                value={formData.formation_id}
-                onChange={handleChange}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                required
-                fullWidth
-                label="User ID"
-                name="user_id"
-                type="number"
-                value={formData.user_id}
-                onChange={handleChange}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                required
-                select
-                fullWidth
-                label="Status"
-                name="status"
-                value={formData.status}
-                onChange={handleChange}
-              >
-                <MenuItem value="pending">Pending</MenuItem>
-                <MenuItem value="accepted">Accepted</MenuItem>
-                <MenuItem value="rejected">Rejected</MenuItem>
-              </TextField>
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                required
-                fullWidth
-                label="Enrollment Date"
-                name="enrollment_date"
-                type="date"
-                value={formData.enrollment_date}
-                onChange={handleChange}
-                InputLabelProps={{ shrink: true }}
-              />
-            </Grid>
-          </Grid>
+      <DialogTitle sx={{ m: 0, p: 2, pb: 1 }}>
+        <Box display="flex" alignItems="center" justifyContent="space-between">
+          <Typography variant="h6" component="div" fontWeight="bold">
+            {enrollment ? 'Edit Enrollment' : 'Add New Enrollment'}
+          </Typography>
+          <IconButton
+            aria-label="close"
+            onClick={onClose}
+            sx={{
+              color: 'text.secondary',
+              '&:hover': { bgcolor: 'grey.100' },
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
         </Box>
+      </DialogTitle>
+      <Divider />
+      <DialogContent sx={{ p: 3 }}>
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              required
+              fullWidth
+              label="Formation ID"
+              name="formation_id"
+              type="number"
+              value={formData.formation_id}
+              onChange={handleChange}
+              InputProps={{
+                sx: { borderRadius: 2 }
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              required
+              fullWidth
+              label="User ID"
+              name="user_id"
+              type="number"
+              value={formData.user_id}
+              onChange={handleChange}
+              InputProps={{
+                sx: { borderRadius: 2 }
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              required
+              select
+              fullWidth
+              label="Status"
+              name="status"
+              value={formData.status}
+              onChange={handleChange}
+              InputProps={{
+                sx: { borderRadius: 2 }
+              }}
+            >
+              <MenuItem value="pending">Pending</MenuItem>
+              <MenuItem value="accepted">Accepted</MenuItem>
+              <MenuItem value="rejected">Rejected</MenuItem>
+            </TextField>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              required
+              fullWidth
+              label="Enrollment Date"
+              name="enrollment_date"
+              type="date"
+              value={formData.enrollment_date}
+              onChange={handleChange}
+              InputProps={{
+                sx: { borderRadius: 2 }
+              }}
+              InputLabelProps={{ shrink: true }}
+            />
+          </Grid>
+        </Grid>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
-        <Button type="submit" variant="contained">
-          {enrollment ? 'Update' : 'Create'}
+      <Divider />
+      <DialogActions sx={{ p: 2.5 }}>
+        <Button
+          onClick={onClose}
+          variant="outlined"
+          sx={{
+            borderRadius: 2,
+            textTransform: 'none',
+            fontWeight: 'medium',
+          }}
+        >
+          Cancel
+        </Button>
+        <Button
+          type="submit"
+          variant="contained"
+          sx={{
+            borderRadius: 2,
+            textTransform: 'none',
+            fontWeight: 'medium',
+          }}
+        >
+          {enrollment ? 'Update Enrollment' : 'Create Enrollment'}
         </Button>
       </DialogActions>
     </form>

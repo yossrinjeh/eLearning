@@ -15,6 +15,7 @@ import {
   Toolbar,
   Typography,
   Divider,
+  Container,
 } from '@mui/material';
 import {
   Menu as MenuIcon,
@@ -122,7 +123,7 @@ const DashboardLayout = ({ children }) => {
   );
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh' }}>
+    <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#f8fafc' }}>
       <CssBaseline />
       <AppBar
         position="fixed"
@@ -130,47 +131,25 @@ const DashboardLayout = ({ children }) => {
         sx={{
           width: { sm: `calc(100% - ${drawerWidth}px)` },
           ml: { sm: `${drawerWidth}px` },
-          bgcolor: 'background.paper',
+          bgcolor: 'white',
           borderBottom: '1px solid',
           borderColor: 'divider',
         }}
       >
-        <Toolbar sx={{ px: { xs: 3, lg: 6 } }}>
-          <IconButton
-            color="inherit"
-            edge="start"
-            onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: 'none' } }}
-          >
-            <MenuIcon />
+        <Toolbar sx={{ justifyContent: 'flex-end', px: { xs: 3, lg: 6 } }}>
+          <IconButton color="inherit" onClick={handleLogout}>
+            <LogoutIcon sx={{ color: 'text.primary' }} />
           </IconButton>
-          <Typography variant="h6" component="div" color="text.primary">
-            Dashboard
-          </Typography>
         </Toolbar>
       </AppBar>
+
       <Box
         component="nav"
-        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+        sx={{
+          width: { sm: drawerWidth },
+          flexShrink: { sm: 0 },
+        }}
       >
-        <Drawer
-          variant="temporary"
-          open={mobileOpen}
-          onClose={handleDrawerToggle}
-          ModalProps={{
-            keepMounted: true,
-          }}
-          sx={{
-            display: { xs: 'block', sm: 'none' },
-            '& .MuiDrawer-paper': {
-              boxSizing: 'border-box',
-              width: drawerWidth,
-              backgroundColor: '#1e293b',
-            },
-          }}
-        >
-          {drawer}
-        </Drawer>
         <Drawer
           variant="permanent"
           sx={{
@@ -178,7 +157,8 @@ const DashboardLayout = ({ children }) => {
             '& .MuiDrawer-paper': {
               boxSizing: 'border-box',
               width: drawerWidth,
-              backgroundColor: '#1e293b',
+              bgcolor: '#1e293b',
+              color: 'white',
               borderRight: 'none',
             },
           }}
@@ -187,20 +167,21 @@ const DashboardLayout = ({ children }) => {
           {drawer}
         </Drawer>
       </Box>
+
       <Box
         component="main"
         sx={{
           flexGrow: 1,
-          p: 3,
+          p: { xs: 2, sm: 4, md: 6 },
           width: { sm: `calc(100% - ${drawerWidth}px)` },
-          ml: { sm: `${drawerWidth}px` },
-          backgroundColor: '#f8fafc',
+          minHeight: '100vh',
+          bgcolor: '#f8fafc',
         }}
       >
         <Toolbar />
-        <Box maxWidth="1600px" mx="auto">
+        <Container maxWidth="xl">
           {children}
-        </Box>
+        </Container>
       </Box>
     </Box>
   );
