@@ -45,6 +45,12 @@ const TrainersList = () => {
     dispatch(fetchTrainers());
   }, [dispatch, page, rowsPerPage]);
 
+  const filteredTrainers = trainers?.filter(trainer =>
+    trainer.firstname.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    trainer.lastname.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    trainer.email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   const handleEdit = (trainer) => {
     setSelectedTrainer(trainer);
     setOpenForm(true);
@@ -132,7 +138,7 @@ const TrainersList = () => {
               <Table>
                 <TableHead>
                   <TableRow>
-                    {['Name', 'Specialities', 'Experience', 'CV', 'Actions'].map((header) => (
+                    {['Name', 'Email', 'Phone', 'Address', 'Status', 'Actions'].map((header) => (
                       <TableCell 
                         key={header}
                         sx={{ 
@@ -148,8 +154,8 @@ const TrainersList = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {Array.isArray(trainers) && trainers.length > 0 ? (
-                    trainers.map((trainer) => (
+                  {Array.isArray(filteredTrainers) && filteredTrainers.length > 0 ? (
+                    filteredTrainers.map((trainer) => (
                       <TableRow 
                         key={trainer.id}
                         hover
@@ -161,26 +167,19 @@ const TrainersList = () => {
                       >
                         <TableCell>
                           <Typography fontWeight="medium">
-                            {trainer.user?.firstname} {trainer.user?.lastname}
+                            {trainer.firstname} {trainer.lastname}
                           </Typography>
                         </TableCell>
-                        <TableCell>{trainer.specialities}</TableCell>
-                        <TableCell>{trainer.experience}</TableCell>
+                        <TableCell>{trainer.email}</TableCell>
+                        <TableCell>{trainer.phone}</TableCell>
+                        <TableCell>{trainer.address}</TableCell>
                         <TableCell>
-                          {trainer.cv_path && (
-                            <Button
-                              size="small"
-                              variant="outlined"
-                              href={trainer.cv_path}
-                              target="_blank"
-                              sx={{
-                                borderRadius: 2,
-                                textTransform: 'none',
-                              }}
-                            >
-                              View CV
-                            </Button>
-                          )}
+                          <Chip
+                            label={trainer.is_active ? 'Active' : 'Inactive'}
+                            color={trainer.is_active ? 'success' : 'default'}
+                            size="small"
+                            sx={{ fontWeight: 'medium' }}
+                          />
                         </TableCell>
                         <TableCell>
                           <Stack direction="row" spacing={1}>
@@ -220,7 +219,7 @@ const TrainersList = () => {
                     ))
                   ) : (
                     <TableRow>
-                      <TableCell colSpan={5} align="center" sx={{ py: 8 }}>
+                      <TableCell colSpan={6} align="center" sx={{ py: 8 }}>
                         <Typography variant="subtitle1" color="text.secondary">
                           No trainers available
                         </Typography>

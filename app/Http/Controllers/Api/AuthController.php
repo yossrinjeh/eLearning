@@ -19,24 +19,30 @@ class AuthController extends Controller
             'lastname' => 'required|string|max:255',
             'email' => 'required|string|email|unique:users',
             'password' => 'required|string|min:8|confirmed',
+            'role' => 'required|in:student,trainer',
             'phone' => 'nullable|string',
             'address' => 'nullable|string'
         ]);
+
+        $isActive = $request->role === 'student';
 
         $user = User::create([
             'firstname' => $request->firstname,
             'lastname' => $request->lastname,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'student',
+            'role' => $request->role,
             'phone' => $request->phone,
-            'address' => $request->address
+            'address' => $request->address,
+            'is_active' => $isActive
         ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
-            'message' => 'User registered successfully',
+            'message' => $request->role === 'trainer' 
+                ? 'Registration successful. Please wait for admin approval.' 
+                : 'User registered successfully',
             'user' => new UserResource($user),
             'token' => $token
         ], 201);

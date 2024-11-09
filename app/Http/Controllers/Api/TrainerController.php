@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use App\Http\Resources\TrainerProfileResource;
-use App\Models\TrainerProfile;
 use App\Models\User;
+use App\Models\TrainerProfile;
 use Illuminate\Http\Request;
 
 class TrainerController extends Controller
@@ -14,8 +14,10 @@ class TrainerController extends Controller
     public function index()
     {
         $trainers = User::where('role', 'trainer')
-            ->with('trainerProfile')
+            ->with(['trainerProfile', 'formations'])
+            ->orderBy('created_at', 'desc')
             ->paginate(10);
+            
         return UserResource::collection($trainers);
     }
 
@@ -27,6 +29,11 @@ class TrainerController extends Controller
             'cv_path' => 'nullable|string',
             'user_id' => 'required|exists:users,id'
         ]);
+
+        $user = User::findOrFail($validated['user_id']);
+        if ($user->role !== 'trainer') {
+            return response()->json(['message' => 'User must be a trainer'], 422);
+        }
 
         $trainerProfile = TrainerProfile::create($validated);
         return new TrainerProfileResource($trainerProfile->load('user'));

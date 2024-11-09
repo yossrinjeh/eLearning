@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { logout } from '../features/auth/authSlice';
 import {
@@ -34,6 +34,7 @@ const drawerWidth = 280;
 const DashboardLayout = ({ children }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { user } = useSelector((state) => state.auth);
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleDrawerToggle = () => {
@@ -46,14 +47,18 @@ const DashboardLayout = ({ children }) => {
   };
 
   const menuItems = [
-    { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
-    { text: 'Rooms', icon: <RoomIcon />, path: '/rooms' },
-    { text: 'Formations', icon: <FormationIcon />, path: '/formations' },
-    { text: 'Enrollments', icon: <EnrollmentIcon />, path: '/enrollments' },
-    { text: 'Evaluations', icon: <EvaluationIcon />, path: '/evaluations' },
-    { text: 'Student Evaluations', icon: <StudentEvaluationIcon />, path: '/student-evaluations' },
-    { text: 'Trainers', icon: <TrainerIcon />, path: '/trainers' },
+    { text: 'Dashboard', icon: <DashboardIcon />, path: '/', roles: ['admin', 'trainer', 'student'] },
+    { text: 'Rooms', icon: <RoomIcon />, path: '/rooms', roles: ['admin'] },
+    { text: 'Formations', icon: <FormationIcon />, path: '/formations', roles: ['admin', 'trainer', 'student'] },
+    { text: 'Enrollments', icon: <EnrollmentIcon />, path: '/enrollments', roles: ['admin'] },
+    { text: 'Evaluations', icon: <EvaluationIcon />, path: '/evaluations', roles: ['admin', 'trainer', 'student'] },
+    { text: 'Student Evaluations', icon: <StudentEvaluationIcon />, path: '/student-evaluations', roles: ['admin'] },
+    { text: 'Trainers', icon: <TrainerIcon />, path: '/trainers', roles: ['admin'] },
   ];
+
+  const filteredMenuItems = menuItems.filter(item => 
+    item.roles.includes(user?.role || '')
+  );
 
   const drawer = (
     <div>
@@ -65,7 +70,7 @@ const DashboardLayout = ({ children }) => {
       </Box>
       <Divider sx={{ borderColor: 'rgba(255,255,255,0.12)' }} />
       <List sx={{ px: 2 }}>
-        {menuItems.map((item) => (
+        {filteredMenuItems.map((item) => (
           <ListItem
             key={item.text}
             onClick={() => navigate(item.path)}

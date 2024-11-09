@@ -16,6 +16,8 @@ import EnrollmentsList from './pages/enrollments/EnrollmentsList';
 import EvaluationsList from './pages/evaluations/EvaluationsList';
 import StudentEvaluationsList from './pages/studentEvaluations/StudentEvaluationsList';
 import TrainersList from './pages/trainers/TrainersList';
+import StudentFormationsList from './pages/student/StudentFormationsList';
+import StudentEvaluationView from './pages/student/StudentEvaluationView';
 
 const theme = createTheme({
   palette: {
@@ -166,7 +168,7 @@ const App = () => {
             <Route
               path="/rooms"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute roles={['admin']}>
                   <RoomsList />
                 </ProtectedRoute>
               }
@@ -175,14 +177,16 @@ const App = () => {
               path="/formations"
               element={
                 <ProtectedRoute>
-                  <FormationsList />
+                  {({ user }) => (
+                    user?.role === 'student' ? <StudentFormationsList /> : <FormationsList />
+                  )}
                 </ProtectedRoute>
               }
             />
             <Route
               path="/enrollments"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute roles={['admin']}>
                   <EnrollmentsList />
                 </ProtectedRoute>
               }
@@ -191,14 +195,16 @@ const App = () => {
               path="/evaluations"
               element={
                 <ProtectedRoute>
-                  <EvaluationsList />
+                  {({ user }) => (
+                    user?.role === 'student' ? <StudentEvaluationView /> : <EvaluationsList />
+                  )}
                 </ProtectedRoute>
               }
             />
             <Route
               path="/student-evaluations"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute roles={['admin']}>
                   <StudentEvaluationsList />
                 </ProtectedRoute>
               }
@@ -206,7 +212,7 @@ const App = () => {
             <Route
               path="/trainers"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute roles={['admin']}>
                   <TrainersList />
                 </ProtectedRoute>
               }
