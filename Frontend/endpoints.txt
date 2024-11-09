@@ -1,0 +1,315 @@
+API ENDPOINTS DOCUMENTATION
+=========================
+
+BASE URL: https://elearning.test/api
+
+AUTHENTICATION ENDPOINTS
+-----------------------
+
+1. Register
+POST /register
+Request:
+{
+    "firstname": "John",
+    "lastname": "Doe",
+    "email": "john@example.com",
+    "password": "password",
+    "password_confirmation": "password",
+    "role": "admin",
+    "phone": "1234567890",
+    "address": "123 Street"
+}
+Response:
+{
+    "message": "User registered successfully",
+    "user": {
+        "id": 1,
+        "firstname": "John",
+        "lastname": "Doe",
+        "email": "john@example.com",
+        "role": "admin",
+        "phone": "1234567890",
+        "address": "123 Street",
+        "is_active": true
+    },
+    "token": "1|example_token"
+}
+
+2. Login
+POST /login
+Request:
+{
+    "email": "john@example.com",
+    "password": "password"
+}
+Response:
+{
+    "message": "Logged in successfully",
+    "user": {
+        "id": 1,
+        "firstname": "John",
+        "lastname": "Doe",
+        "email": "john@example.com",
+        "role": "admin"
+    },
+    "token": "1|example_token"
+}
+
+3. Logout
+POST /logout
+Headers:
+Authorization: Bearer {token}
+Response:
+{
+    "message": "Logged out successfully"
+}
+
+ROOMS ENDPOINTS
+--------------
+
+1. Create Room
+POST /rooms
+Headers:
+Authorization: Bearer {token}
+Request:
+{
+    "name": "Room 101",
+    "capacity": 30,
+    "equipment": "Projector, Whiteboard",
+    "status": "available"
+}
+
+2. Get All Rooms
+GET /rooms
+Headers:
+Authorization: Bearer {token}
+
+3. Get Single Room
+GET /rooms/{id}
+Headers:
+Authorization: Bearer {token}
+
+4. Update Room
+PUT /rooms/{id}
+Headers:
+Authorization: Bearer {token}
+Request:
+{
+    "name": "Updated Room 101",
+    "capacity": 35,
+    "equipment": "Updated Equipment",
+    "status": "occupied"
+}
+
+5. Delete Room
+DELETE /rooms/{id}
+Headers:
+Authorization: Bearer {token}
+
+FORMATIONS ENDPOINTS
+------------------
+
+1. Create Formation
+POST /formations
+Headers:
+Authorization: Bearer {token}
+Request:
+{
+    "title": "Laravel Masterclass",
+    "description": "Advanced Laravel Training",
+    "start_date": "2024-04-01",
+    "end_date": "2024-04-30",
+    "duration": 30,
+    "max_capacity": 20,
+    "room_id": 1,
+    "trainer_id": 1,
+    "status": "upcoming"
+}
+
+2. Get All Formations
+GET /formations
+Headers:
+Authorization: Bearer {token}
+
+3. Get Single Formation
+GET /formations/{id}
+Headers:
+Authorization: Bearer {token}
+
+4. Update Formation
+PUT /formations/{id}
+Headers:
+Authorization: Bearer {token}
+Request:
+{
+    "title": "Updated Laravel Course",
+    "description": "Updated description",
+    "status": "ongoing"
+}
+
+5. Delete Formation
+DELETE /formations/{id}
+Headers:
+Authorization: Bearer {token}
+
+ENROLLMENTS ENDPOINTS
+-------------------
+
+1. Create Enrollment
+POST /enrollments
+Headers:
+Authorization: Bearer {token}
+Request:
+{
+    "formation_id": 1,
+    "user_id": 2,
+    "status": "pending",
+    "enrollment_date": "2024-03-20"
+}
+
+2. Get All Enrollments
+GET /enrollments
+Headers:
+Authorization: Bearer {token}
+
+3. Get Single Enrollment
+GET /enrollments/{id}
+Headers:
+Authorization: Bearer {token}
+
+4. Update Enrollment
+PUT /enrollments/{id}
+Headers:
+Authorization: Bearer {token}
+Request:
+{
+    "status": "accepted"
+}
+
+5. Delete Enrollment
+DELETE /enrollments/{id}
+Headers:
+Authorization: Bearer {token}
+
+EVALUATIONS ENDPOINTS
+-------------------
+
+1. Create Evaluation
+POST /evaluations
+Headers:
+Authorization: Bearer {token}
+Request:
+{
+    "formation_id": 1,
+    "title": "Final Evaluation",
+    "description": "Final course evaluation",
+    "date": "2024-04-30",
+    "is_active": true
+}
+
+2. Get All Evaluations
+GET /evaluations
+Headers:
+Authorization: Bearer {token}
+
+3. Get Single Evaluation
+GET /evaluations/{id}
+Headers:
+Authorization: Bearer {token}
+
+4. Update Evaluation
+PUT /evaluations/{id}
+Headers:
+Authorization: Bearer {token}
+Request:
+{
+    "title": "Updated Evaluation",
+    "is_active": false
+}
+
+5. Delete Evaluation
+DELETE /evaluations/{id}
+Headers:
+Authorization: Bearer {token}
+
+STUDENT EVALUATIONS ENDPOINTS
+---------------------------
+
+1. Create Student Evaluation
+POST /student-evaluations
+Headers:
+Authorization: Bearer {token}
+Request:
+{
+    "evaluation_id": 1,
+    "user_id": 2,
+    "score": 85.5,
+    "comments": "Good performance"
+}
+
+2. Get All Student Evaluations
+GET /student-evaluations
+Headers:
+Authorization: Bearer {token}
+
+3. Get Single Student Evaluation
+GET /student-evaluations/{id}
+Headers:
+Authorization: Bearer {token}
+
+4. Update Student Evaluation
+PUT /student-evaluations/{id}
+Headers:
+Authorization: Bearer {token}
+Request:
+{
+    "score": 90,
+    "comments": "Updated comments"
+}
+
+5. Delete Student Evaluation
+DELETE /student-evaluations/{id}
+Headers:
+Authorization: Bearer {token}
+
+TRAINERS ENDPOINTS
+----------------
+
+1. Get All Trainers
+GET /trainers
+Headers:
+Authorization: Bearer {token}
+
+2. Get Single Trainer
+GET /trainers/{id}
+Headers:
+Authorization: Bearer {token}
+
+3. Create Trainer Profile
+POST /trainers
+Headers:
+Authorization: Bearer {token}
+Request:
+{
+    "specialities": "Laravel, React",
+    "experience": "5 years",
+    "cv_path": "path/to/cv",
+    "user_id": 1
+}
+
+4. Update Trainer Profile
+PUT /trainers/{id}
+Headers:
+Authorization: Bearer {token}
+Request:
+{
+    "specialities": "Updated specialities",
+    "experience": "6 years"
+}
+
+5. Delete Trainer Profile
+DELETE /trainers/{id}
+Headers:
+Authorization: Bearer {token}
+
+Note: All responses include pagination for list endpoints and proper error messages for failed requests. 

@@ -29,6 +29,8 @@ class Formation extends Model
         'start_date' => 'datetime',
         'end_date' => 'datetime',
         'is_active' => 'boolean',
+        'duration' => 'integer',
+        'max_capacity' => 'integer'
     ];
 
     // Relationships
