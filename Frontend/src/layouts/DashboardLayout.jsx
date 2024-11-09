@@ -28,7 +28,7 @@ import {
   Logout as LogoutIcon,
 } from '@mui/icons-material';
 
-const drawerWidth = 240;
+const drawerWidth = 280;
 
 const DashboardLayout = ({ children }) => {
   const dispatch = useDispatch();
@@ -56,57 +56,96 @@ const DashboardLayout = ({ children }) => {
 
   const drawer = (
     <div>
-      <Toolbar />
-      <Divider />
-      <List>
+      <Box sx={{ p: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
+        <img src="/logo.svg" alt="Logo" style={{ width: 32, height: 32 }} />
+        <Typography variant="h6" sx={{ color: 'white', fontWeight: 600 }}>
+          E-Learning
+        </Typography>
+      </Box>
+      <Divider sx={{ borderColor: 'rgba(255,255,255,0.12)' }} />
+      <List sx={{ px: 2 }}>
         {menuItems.map((item) => (
           <ListItem
             key={item.text}
             onClick={() => navigate(item.path)}
             component="div"
-            sx={{ cursor: 'pointer' }}
+            sx={{
+              mb: 1,
+              borderRadius: 2,
+              cursor: 'pointer',
+              '&:hover': {
+                backgroundColor: 'rgba(255,255,255,0.08)',
+              },
+            }}
           >
-            <ListItemIcon>{item.icon}</ListItemIcon>
-            <ListItemText primary={item.text} />
+            <ListItemIcon sx={{ color: 'white', minWidth: 40 }}>
+              {item.icon}
+            </ListItemIcon>
+            <ListItemText 
+              primary={item.text} 
+              sx={{ 
+                '& .MuiListItemText-primary': { 
+                  fontWeight: 500,
+                  fontSize: '0.875rem',
+                } 
+              }} 
+            />
           </ListItem>
         ))}
-        <Divider />
+        <Divider sx={{ my: 2, borderColor: 'rgba(255,255,255,0.12)' }} />
         <ListItem
           onClick={handleLogout}
           component="div"
-          sx={{ cursor: 'pointer' }}
+          sx={{
+            borderRadius: 2,
+            cursor: 'pointer',
+            '&:hover': {
+              backgroundColor: 'rgba(255,255,255,0.08)',
+            },
+          }}
         >
-          <ListItemIcon>
+          <ListItemIcon sx={{ color: 'white', minWidth: 40 }}>
             <LogoutIcon />
           </ListItemIcon>
-          <ListItemText primary="Logout" />
+          <ListItemText 
+            primary="Logout" 
+            sx={{ 
+              '& .MuiListItemText-primary': { 
+                fontWeight: 500,
+                fontSize: '0.875rem',
+              } 
+            }} 
+          />
         </ListItem>
       </List>
     </div>
   );
 
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: 'flex', minHeight: '100vh' }}>
       <CssBaseline />
       <AppBar
         position="fixed"
+        elevation={0}
         sx={{
           width: { sm: `calc(100% - ${drawerWidth}px)` },
           ml: { sm: `${drawerWidth}px` },
+          bgcolor: 'background.paper',
+          borderBottom: '1px solid',
+          borderColor: 'divider',
         }}
       >
-        <Toolbar>
+        <Toolbar sx={{ px: { xs: 3, lg: 6 } }}>
           <IconButton
             color="inherit"
-            aria-label="open drawer"
             edge="start"
             onClick={handleDrawerToggle}
             sx={{ mr: 2, display: { sm: 'none' } }}
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div">
-            E-Learning Platform
+          <Typography variant="h6" component="div" color="text.primary">
+            Dashboard
           </Typography>
         </Toolbar>
       </AppBar>
@@ -126,6 +165,7 @@ const DashboardLayout = ({ children }) => {
             '& .MuiDrawer-paper': {
               boxSizing: 'border-box',
               width: drawerWidth,
+              backgroundColor: '#1e293b',
             },
           }}
         >
@@ -138,6 +178,8 @@ const DashboardLayout = ({ children }) => {
             '& .MuiDrawer-paper': {
               boxSizing: 'border-box',
               width: drawerWidth,
+              backgroundColor: '#1e293b',
+              borderRight: 'none',
             },
           }}
           open
@@ -151,10 +193,14 @@ const DashboardLayout = ({ children }) => {
           flexGrow: 1,
           p: 3,
           width: { sm: `calc(100% - ${drawerWidth}px)` },
+          ml: { sm: `${drawerWidth}px` },
+          backgroundColor: '#f8fafc',
         }}
       >
         <Toolbar />
-        {children}
+        <Box maxWidth="1600px" mx="auto">
+          {children}
+        </Box>
       </Box>
     </Box>
   );

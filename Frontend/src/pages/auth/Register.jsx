@@ -43,115 +43,121 @@ const Register = () => {
   };
 
   return (
-    <Container component="main" maxWidth="sm">
-      <Box
-        sx={{
-          marginTop: 8,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
+    <Container 
+      component="main" 
+      maxWidth="sm"
+      sx={{ 
+        width: '100%',
+        pt: 8,
+        pb: 4
+      }}
+    >
+      <Paper 
+        elevation={3} 
+        sx={{ 
+          p: 4,
+          width: '100%',
+          mx: 'auto'
         }}
       >
-        <Paper elevation={3} sx={{ padding: 4, width: '100%' }}>
-          <Typography component="h1" variant="h5" align="center">
-            Sign Up
-          </Typography>
-          {error && <Alert severity="error">{error.message}</Alert>}
-          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  required
-                  fullWidth
-                  name="firstname"
-                  label="First Name"
-                  value={formData.firstname}
-                  onChange={handleChange}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  required
-                  fullWidth
-                  name="lastname"
-                  label="Last Name"
-                  value={formData.lastname}
-                  onChange={handleChange}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  name="email"
-                  label="Email Address"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  name="password"
-                  label="Password"
-                  type="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  name="password_confirmation"
-                  label="Confirm Password"
-                  type="password"
-                  value={formData.password_confirmation}
-                  onChange={handleChange}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  name="phone"
-                  label="Phone Number"
-                  value={formData.phone}
-                  onChange={handleChange}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  name="address"
-                  label="Address"
-                  multiline
-                  rows={2}
-                  value={formData.address}
-                  onChange={handleChange}
-                />
-              </Grid>
+        <Typography component="h1" variant="h5" align="center">
+          Sign Up
+        </Typography>
+        {error && <Alert severity="error">{error.message}</Alert>}
+        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                required
+                fullWidth
+                name="firstname"
+                label="First Name"
+                value={formData.firstname}
+                onChange={handleChange}
+              />
             </Grid>
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-              disabled={loading}
-            >
-              {loading ? 'Signing up...' : 'Sign Up'}
-            </Button>
-            <Box sx={{ textAlign: 'center' }}>
-              <Link to="/login" style={{ textDecoration: 'none' }}>
-                {'Already have an account? Sign In'}
-              </Link>
-            </Box>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                required
+                fullWidth
+                name="lastname"
+                label="Last Name"
+                value={formData.lastname}
+                onChange={handleChange}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                required
+                fullWidth
+                name="email"
+                label="Email Address"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                required
+                fullWidth
+                name="password"
+                label="Password"
+                type="password"
+                value={formData.password}
+                onChange={handleChange}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                required
+                fullWidth
+                name="password_confirmation"
+                label="Confirm Password"
+                type="password"
+                value={formData.password_confirmation}
+                onChange={handleChange}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                required
+                fullWidth
+                name="phone"
+                label="Phone Number"
+                value={formData.phone}
+                onChange={handleChange}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                required
+                fullWidth
+                name="address"
+                label="Address"
+                multiline
+                rows={2}
+                value={formData.address}
+                onChange={handleChange}
+              />
+            </Grid>
+          </Grid>
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+            disabled={loading}
+          >
+            {loading ? 'Signing up...' : 'Sign Up'}
+          </Button>
+          <Box sx={{ textAlign: 'center' }}>
+            <Link to="/login" style={{ textDecoration: 'none' }}>
+              {'Already have an account? Sign In'}
+            </Link>
           </Box>
-        </Paper>
-      </Box>
+        </Box>
+      </Paper>
     </Container>
   );
 };
