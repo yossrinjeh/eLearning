@@ -11,16 +11,18 @@ import {
   Box,
   Alert,
   Grid,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
+  Tabs,
+  Tab,
+  IconButton,
+  InputAdornment,
 } from '@mui/material';
+import { CloudUpload as UploadIcon } from '@mui/icons-material';
 
 const Register = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { loading, error } = useSelector((state) => state.auth);
+  const [activeTab, setActiveTab] = useState(0); // 0 for student, 1 for trainer
   const [formData, setFormData] = useState({
     firstname: '',
     lastname: '',
@@ -29,19 +31,70 @@ const Register = () => {
     password_confirmation: '',
     phone: '',
     address: '',
-    role: 'student', // default role
+    role: 'student',
+    // Trainer specific fields
+    specialities: '',
+    experience: '',
+    cv_file: null,
   });
+  const [fileName, setFileName] = useState('');
 
-  const handleChange = (e) => {
+  const handleTabChange = (event, newValue) => {
+    setActiveTab(newValue);
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      role: newValue === 0 ? 'student' : 'trainer',
     });
+  };
+
+  const handleChange = (e) => {
+    if (e.target.name === 'cv_file') {
+      const file = e.target.files[0];
+      if (file) {
+        setFormData({
+          ...formData,
+          cv_file: file,
+        });
+        setFileName(file.name);
+      }
+    } else {
+      setFormData({
+        ...formData,
+        [e.target.name]: e.target.value,
+      });
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const result = await dispatch(register(formData));
+
+    // Validate CV file for trainer role
+    if (formData.role === 'trainer' && !formData.cv_file) {
+      alert('Please upload your CV file');
+      return;
+    }
+
+    // Create FormData object
+    const submitData = new FormData();
+
+    // Append basic user data
+    submitData.append('firstname', formData.firstname);
+    submitData.append('lastname', formData.lastname);
+    submitData.append('email', formData.email);
+    submitData.append('password', formData.password);
+    submitData.append('password_confirmation', formData.password_confirmation);
+    submitData.append('phone', formData.phone);
+    submitData.append('address', formData.address);
+    submitData.append('role', formData.role);
+
+    // If trainer role, append trainer specific fields directly
+    if (formData.role === 'trainer') {
+      submitData.append('specialities', formData.specialities);
+      submitData.append('experience', formData.experience);
+      submitData.append('cv_file', formData.cv_file);
+    }
+
+    const result = await dispatch(register(submitData));
     if (!result.error) {
       navigate('/');
     }
@@ -70,7 +123,32 @@ const Register = () => {
         <Typography component="h1" variant="h5" align="center" gutterBottom>
           Sign Up
         </Typography>
+
+        <Tabs 
+          value={activeTab} 
+          onChange={handleTabChange} 
+          sx={{ mb: 3, borderBottom: 1, borderColor: 'divider', width: '100%' }}
+        >
+          <Tab 
+            label="Student" 
+            sx={{ 
+              textTransform: 'none',
+              fontWeight: 'medium',
+              flex: 1
+            }} 
+          />
+          <Tab 
+            label="Trainer" 
+            sx={{ 
+              textTransform: 'none',
+              fontWeight: 'medium',
+              flex: 1
+            }} 
+          />
+        </Tabs>
+
         {error && <Alert severity="error" sx={{ width: '100%', mb: 2 }}>{error.message}</Alert>}
+        
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1, width: '100%' }}>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
@@ -127,20 +205,6 @@ const Register = () => {
               />
             </Grid>
             <Grid item xs={12}>
-              <FormControl fullWidth required>
-                <InputLabel>Sign Up As</InputLabel>
-                <Select
-                  name="role"
-                  value={formData.role}
-                  onChange={handleChange}
-                  label="Sign Up As"
-                >
-                  <MenuItem value="student">Student</MenuItem>
-                  <MenuItem value="trainer">Trainer</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12}>
               <TextField
                 required
                 fullWidth
@@ -162,7 +226,67 @@ const Register = () => {
                 onChange={handleChange}
               />
             </Grid>
+
+            {/* Trainer specific fields */}
+            {activeTab === 1 && (
+              <>
+                <Grid item xs={12}>
+                  <TextField
+                    required
+                    fullWidth
+                    name="specialities"
+                    label="Specialities"
+                    value={formData.specialities}
+                    onChange={handleChange}
+                    multiline
+                    rows={2}
+                    helperText="Enter your specialities separated by commas"
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    required
+                    fullWidth
+                    name="experience"
+                    label="Experience"
+                    value={formData.experience}
+                    onChange={handleChange}
+                    multiline
+                    rows={2}
+                    helperText="Describe your professional experience"
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <Button
+                    component="label"
+                    variant="outlined"
+                    startIcon={<UploadIcon />}
+                    sx={{
+                      width: '100%',
+                      py: 1.5,
+                      borderRadius: 2,
+                      borderStyle: 'dashed',
+                    }}
+                  >
+                    Upload CV
+                    <input
+                      type="file"
+                      name="cv_file"
+                      onChange={handleChange}
+                      accept=".pdf,.doc,.docx"
+                      style={{ display: 'none' }}
+                    />
+                  </Button>
+                  {fileName && (
+                    <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+                      Selected file: {fileName}
+                    </Typography>
+                  )}
+                </Grid>
+              </>
+            )}
           </Grid>
+
           <Button
             type="submit"
             fullWidth

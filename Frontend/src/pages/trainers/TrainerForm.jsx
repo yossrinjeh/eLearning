@@ -15,8 +15,9 @@ import {
   FormControl,
   InputLabel,
   Select,
+  Input,
 } from '@mui/material';
-import { Close as CloseIcon } from '@mui/icons-material';
+import { Close as CloseIcon, CloudUpload as UploadIcon } from '@mui/icons-material';
 import { createTrainer, updateTrainer } from '../../features/trainers/trainersSlice';
 import { fetchUsers } from '../../features/users/usersSlice';
 
@@ -28,8 +29,10 @@ const TrainerForm = ({ trainer, onClose }) => {
     user_id: '',
     specialities: '',
     experience: '',
-    cv_path: '',
+    cv_file: null,
   });
+
+  const [fileName, setFileName] = useState('');
 
   useEffect(() => {
     dispatch(fetchUsers());
@@ -41,23 +44,42 @@ const TrainerForm = ({ trainer, onClose }) => {
         user_id: trainer.user_id || '',
         specialities: trainer.specialities || '',
         experience: trainer.experience || '',
-        cv_path: trainer.cv_path || '',
+        cv_file: null,
       });
+      setFileName(trainer.cv_path ? trainer.cv_path.split('/').pop() : '');
     }
   }, [trainer]);
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    if (e.target.name === 'cv_file') {
+      const file = e.target.files[0];
+      setFormData({
+        ...formData,
+        cv_file: file,
+      });
+      setFileName(file ? file.name : '');
+    } else {
+      setFormData({
+        ...formData,
+        [e.target.name]: e.target.value,
+      });
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    const submitData = new FormData();
+    submitData.append('user_id', formData.user_id);
+    submitData.append('specialities', formData.specialities);
+    submitData.append('experience', formData.experience);
+    if (formData.cv_file) {
+      submitData.append('cv_file', formData.cv_file);
+    }
+
     const action = trainer
-      ? await dispatch(updateTrainer({ id: trainer.id, data: formData }))
-      : await dispatch(createTrainer(formData));
+      ? await dispatch(updateTrainer({ id: trainer.id, data: submitData }))
+      : await dispatch(createTrainer(submitData));
 
     if (!action.error) {
       onClose();
@@ -136,17 +158,31 @@ const TrainerForm = ({ trainer, onClose }) => {
             />
           </Grid>
           <Grid item xs={12}>
-            <TextField
-              fullWidth
-              label="CV Path"
-              name="cv_path"
-              value={formData.cv_path}
-              onChange={handleChange}
-              InputProps={{
-                sx: { borderRadius: 2 }
+            <Button
+              component="label"
+              variant="outlined"
+              startIcon={<UploadIcon />}
+              sx={{
+                width: '100%',
+                py: 1.5,
+                borderRadius: 2,
+                borderStyle: 'dashed',
               }}
-              helperText="Enter the path to the CV file"
-            />
+            >
+              Upload CV
+              <input
+                type="file"
+                name="cv_file"
+                onChange={handleChange}
+                accept=".pdf,.doc,.docx"
+                style={{ display: 'none' }}
+              />
+            </Button>
+            {fileName && (
+              <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+                Selected file: {fileName}
+              </Typography>
+            )}
           </Grid>
         </Grid>
       </DialogContent>
