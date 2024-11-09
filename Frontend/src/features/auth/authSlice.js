@@ -46,11 +46,30 @@ export const login = createAsyncThunk(
   }
 );
 
-export const logout = createAsyncThunk('auth/logout', async () => {
-  localStorage.removeItem('token');
-  localStorage.removeItem('user');
-  await api.post(endpoints.auth.logout);
-});
+export const logout = createAsyncThunk(
+  'auth/logout',
+  async (_, { rejectWithValue }) => {
+    try {
+      // Get token from localStorage
+      const token = localStorage.getItem('token');
+      
+      // Send logout request with token
+      await api.post(endpoints.auth.logout, {}, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      // Clear localStorage
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+
+      return null;
+    } catch (error) {
+      return rejectWithValue(error.response?.data);
+    }
+  }
+);
 
 const authSlice = createSlice({
   name: 'auth',
