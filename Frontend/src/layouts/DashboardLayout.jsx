@@ -52,7 +52,7 @@ const DashboardLayout = ({ children }) => {
     { text: 'Formations', icon: <FormationIcon />, path: '/formations', roles: ['admin', 'trainer', 'student'] },
     { text: 'Enrollments', icon: <EnrollmentIcon />, path: '/enrollments', roles: ['admin'] },
     { text: 'Evaluations', icon: <EvaluationIcon />, path: '/evaluations', roles: ['admin', 'trainer', 'student'] },
-    { text: 'Student Evaluations', icon: <StudentEvaluationIcon />, path: '/student-evaluations', roles: ['admin'] },
+    { text: 'Student Evaluations', icon: <StudentEvaluationIcon />, path: '/student-evaluations', roles: ['admin', 'trainer'] },
     { text: 'Trainers', icon: <TrainerIcon />, path: '/trainers', roles: ['admin'] },
   ];
 

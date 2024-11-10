@@ -22,6 +22,8 @@ import {
 } from '@mui/material';
 import { Edit as EditIcon, Delete as DeleteIcon, Search as SearchIcon } from '@mui/icons-material';
 import { fetchFormations, deleteFormation } from '../../features/formations/formationsSlice';
+import { fetchTrainers } from '../../features/trainers/trainersSlice';
+import { fetchRooms } from '../../features/rooms/roomsSlice';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import FormationForm from './FormationForm';
 import PageHeader from '../../components/PageHeader';
@@ -38,18 +40,41 @@ const formatDate = (dateString) => {
 
 const FormationsList = () => {
   const dispatch = useDispatch();
-  const { items: formations, loading, error, pagination } = useSelector(
-    (state) => state.formations
-  );
+  const { items: formations, loading, pagination } = useSelector((state) => state.formations);
+  const { user } = useSelector((state) => state.auth);
   const [openForm, setOpenForm] = useState(false);
   const [selectedFormation, setSelectedFormation] = useState(null);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [searchTerm, setSearchTerm] = useState('');
 
+  const getStatusColor = (status) => {
+    switch (status?.toLowerCase()) {
+      case 'pending':
+        return 'warning';
+      case 'ongoing':
+        return 'info';
+      case 'completed':
+        return 'success';
+      case 'cancelled':
+        return 'error';
+      default:
+        return 'default';
+    }
+  };
+
   useEffect(() => {
     dispatch(fetchFormations());
-  }, [dispatch, page, rowsPerPage]);
+  }, [dispatch]);
+
+  // Filter formations for trainer
+  const filteredFormations = formations?.filter(formation => {
+    if (user?.role === 'admin') return true;
+    if (user?.role === 'trainer') {
+      return formation.trainer?.id === user?.id;
+    }
+    return false;
+  });
 
   const handleEdit = (formation) => {
     setSelectedFormation(formation);
@@ -78,17 +103,13 @@ const FormationsList = () => {
     setPage(0);
   };
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'Pending':
-        return 'warning';
-      case 'Active':
-        return 'success';
-      case 'Completed':
-        return 'default';
-      default:
-        return 'default';
-    }
+  // Get trainer name function
+  const getTrainerName = (trainer) => {
+    return trainer ? `${trainer.firstname} ${trainer.lastname}` : 'Not Assigned';
+  };
+
+  const getRoomName = (room) => {
+    return room ? room.name : 'Not Assigned';
   };
 
   return (
@@ -96,7 +117,8 @@ const FormationsList = () => {
       <Box sx={{ width: '100%' }}>
         <PageHeader 
           title="Formations" 
-          onAdd={() => setOpenForm(true)} 
+          onAdd={() => setOpenForm(true)}
+          showAddButton={user?.role === 'admin'} 
         />
 
         <Box sx={{ mb: 4 }}>
@@ -127,17 +149,6 @@ const FormationsList = () => {
           <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
             <CircularProgress />
           </Box>
-        ) : error ? (
-          <Paper 
-            sx={{ 
-              p: 3, 
-              bgcolor: '#FEE2E2', 
-              color: '#DC2626',
-              borderRadius: 2,
-            }}
-          >
-            <Typography>{error}</Typography>
-          </Paper>
         ) : (
           <Paper 
             sx={{ 
@@ -147,7 +158,7 @@ const FormationsList = () => {
               boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
             }}
           >
-            <TableContainer>
+            <TableContainer component={Paper}>
               <Table>
                 <TableHead>
                   <TableRow>
@@ -219,6 +230,26 @@ const FormationsList = () => {
                         borderColor: 'divider',
                       }}
                     >
+                      Trainer
+                    </TableCell>
+                    <TableCell 
+                      sx={{ 
+                        fontWeight: 600,
+                        bgcolor: '#f8fafc',
+                        borderBottom: '2px solid',
+                        borderColor: 'divider',
+                      }}
+                    >
+                      Room
+                    </TableCell>
+                    <TableCell 
+                      sx={{ 
+                        fontWeight: 600,
+                        bgcolor: '#f8fafc',
+                        borderBottom: '2px solid',
+                        borderColor: 'divider',
+                      }}
+                    >
                       Status
                     </TableCell>
                     <TableCell 
@@ -234,78 +265,50 @@ const FormationsList = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {Array.isArray(formations) && formations.length > 0 ? (
-                    formations.map((formation) => (
-                      <TableRow 
-                        key={formation.id}
-                        hover
-                        sx={{
-                          '&:hover': {
-                            bgcolor: '#f8fafc',
-                          },
-                        }}
-                      >
-                        <TableCell>
-                          <Typography fontWeight="medium">{formation.title}</Typography>
-                        </TableCell>
-                        <TableCell>{formation.description}</TableCell>
-                        <TableCell>{formatDate(formation.start_date)}</TableCell>
-                        <TableCell>{formatDate(formation.end_date)}</TableCell>
-                        <TableCell>{formation.duration} days</TableCell>
-                        <TableCell>{formation.max_capacity}</TableCell>
-                        <TableCell>
-                          <Chip
-                            label={formation.status}
-                            color={getStatusColor(formation.status)}
+                  {filteredFormations?.map((formation) => (
+                    <TableRow
+                      key={formation.id}
+                      sx={{
+                        '&:hover': {
+                          backgroundColor: 'action.hover',
+                        },
+                      }}
+                    >
+                      <TableCell>{formation.title}</TableCell>
+                      <TableCell>{formation.description}</TableCell>
+                      <TableCell>{formatDate(formation.start_date)}</TableCell>
+                      <TableCell>{formatDate(formation.end_date)}</TableCell>
+                      <TableCell>{formation.duration}</TableCell>
+                      <TableCell>{formation.max_capacity}</TableCell>
+                      <TableCell>{getTrainerName(formation.trainer)}</TableCell>
+                      <TableCell>{getRoomName(formation.room)}</TableCell>
+                      <TableCell>
+                        <Chip
+                          label={formation.status}
+                          color={getStatusColor(formation.status)}
+                          size="small"
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Box sx={{ display: 'flex', gap: 1 }}>
+                          <IconButton
                             size="small"
-                            sx={{ fontWeight: 'medium' }}
-                          />
-                        </TableCell>
-                        <TableCell align="right">
-                          <Stack direction="row" spacing={1} justifyContent="flex-end">
-                            <IconButton
-                              onClick={() => handleEdit(formation)}
-                              size="small"
-                              sx={{
-                                bgcolor: 'primary.50',
-                                color: 'primary.main',
-                                '&:hover': { 
-                                  bgcolor: 'primary.100',
-                                  transform: 'scale(1.1)',
-                                },
-                                transition: 'transform 0.2s',
-                              }}
-                            >
-                              <EditIcon fontSize="small" />
-                            </IconButton>
-                            <IconButton
-                              onClick={() => handleDelete(formation.id)}
-                              size="small"
-                              sx={{
-                                bgcolor: 'error.50',
-                                color: 'error.main',
-                                '&:hover': { 
-                                  bgcolor: 'error.100',
-                                  transform: 'scale(1.1)',
-                                },
-                                transition: 'transform 0.2s',
-                              }}
-                            >
-                              <DeleteIcon fontSize="small" />
-                            </IconButton>
-                          </Stack>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={8} align="center" sx={{ py: 8 }}>
-                        <Typography variant="subtitle1" color="text.secondary">
-                          No formations available
-                        </Typography>
+                            onClick={() => handleEdit(formation)}
+                            color="primary"
+                          >
+                            <EditIcon />
+                          </IconButton>
+                          <IconButton
+                            size="small"
+                            onClick={() => handleDelete(formation.id)}
+                            color="error"
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        </Box>
                       </TableCell>
                     </TableRow>
-                  )}
+                  ))}
                 </TableBody>
               </Table>
             </TableContainer>
@@ -319,7 +322,7 @@ const FormationsList = () => {
             >
               <TablePagination
                 component="div"
-                count={pagination.totalItems}
+                count={pagination?.total || 0}
                 page={page}
                 onPageChange={handleChangePage}
                 rowsPerPage={rowsPerPage}
@@ -334,19 +337,16 @@ const FormationsList = () => {
           </Paper>
         )}
 
-        <Dialog 
-          open={openForm} 
-          onClose={handleCloseForm} 
-          maxWidth="md" 
+        <Dialog
+          open={openForm}
+          onClose={handleCloseForm}
+          maxWidth="md"
           fullWidth
-          PaperProps={{
-            sx: { 
-              borderRadius: 3,
-              boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
-            }
-          }}
         >
-          <FormationForm formation={selectedFormation} onClose={handleCloseForm} />
+          <FormationForm
+            formation={selectedFormation}
+            onClose={handleCloseForm}
+          />
         </Dialog>
       </Box>
     </DashboardLayout>

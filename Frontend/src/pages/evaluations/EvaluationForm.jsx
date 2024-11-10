@@ -3,20 +3,17 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   DialogTitle,
   DialogContent,
-  DialogActions,
-  Button,
-  TextField,
-  Box,
   Grid,
-  MenuItem,
+  TextField,
+  Button,
+  Box,
   IconButton,
   Typography,
   Divider,
   FormControl,
   InputLabel,
   Select,
-  Switch,
-  FormControlLabel,
+  MenuItem,
 } from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';
 import { createEvaluation, updateEvaluation } from '../../features/evaluations/evaluationsSlice';
@@ -25,36 +22,32 @@ import { fetchFormations } from '../../features/formations/formationsSlice';
 const EvaluationForm = ({ evaluation, onClose }) => {
   const dispatch = useDispatch();
   const formations = useSelector((state) => state.formations.items);
-  
+  const { user } = useSelector((state) => state.auth);
   const [formData, setFormData] = useState({
-    formation_id: '',
     title: '',
     description: '',
-    date: new Date().toISOString().split('T')[0],
+    date: '',
+    formation_id: '',
     is_active: true,
   });
 
   useEffect(() => {
     dispatch(fetchFormations());
-  }, [dispatch]);
-
-  useEffect(() => {
     if (evaluation) {
       setFormData({
-        formation_id: evaluation.formation_id || '',
         title: evaluation.title || '',
         description: evaluation.description || '',
-        date: evaluation.date?.split('T')[0] || new Date().toISOString().split('T')[0],
+        date: evaluation.date?.split('T')[0] || '',
+        formation_id: evaluation.formation_id || '',
         is_active: evaluation.is_active ?? true,
       });
     }
-  }, [evaluation]);
+  }, [evaluation, dispatch]);
 
   const handleChange = (e) => {
-    const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
     setFormData({
       ...formData,
-      [e.target.name]: value,
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -68,6 +61,15 @@ const EvaluationForm = ({ evaluation, onClose }) => {
       onClose();
     }
   };
+
+  // Filter formations based on user role
+  const filteredFormations = formations?.filter(formation => {
+    if (user?.role === 'admin') return true;
+    if (user?.role === 'trainer') {
+      return formation.trainer_id === user?.id;
+    }
+    return false;
+  });
 
   return (
     <form onSubmit={handleSubmit}>
@@ -101,7 +103,7 @@ const EvaluationForm = ({ evaluation, onClose }) => {
                 label="Formation"
                 sx={{ borderRadius: 2 }}
               >
-                {formations.map((formation) => (
+                {filteredFormations.map((formation) => (
                   <MenuItem key={formation.id} value={formation.id}>
                     {formation.title}
                   </MenuItem>
@@ -117,9 +119,7 @@ const EvaluationForm = ({ evaluation, onClose }) => {
               name="title"
               value={formData.title}
               onChange={handleChange}
-              InputProps={{
-                sx: { borderRadius: 2 }
-              }}
+              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
             />
           </Grid>
           <Grid item xs={12}>
@@ -132,66 +132,46 @@ const EvaluationForm = ({ evaluation, onClose }) => {
               onChange={handleChange}
               multiline
               rows={3}
-              InputProps={{
-                sx: { borderRadius: 2 }
-              }}
+              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12}>
             <TextField
               required
               fullWidth
+              type="date"
               label="Date"
               name="date"
-              type="date"
               value={formData.date}
               onChange={handleChange}
-              InputProps={{
-                sx: { borderRadius: 2 }
-              }}
               InputLabelProps={{ shrink: true }}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={formData.is_active}
-                  onChange={handleChange}
-                  name="is_active"
-                  color="success"
-                />
-              }
-              label="Active"
+              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
             />
           </Grid>
         </Grid>
+        <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+          <Button
+            onClick={onClose}
+            sx={{
+              color: 'text.secondary',
+              '&:hover': { bgcolor: 'grey.100' },
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            variant="contained"
+            sx={{
+              bgcolor: 'primary.main',
+              color: 'white',
+              '&:hover': { bgcolor: 'primary.dark' },
+            }}
+          >
+            {evaluation ? 'Update' : 'Create'}
+          </Button>
+        </Box>
       </DialogContent>
-      <Divider />
-      <DialogActions sx={{ p: 2.5 }}>
-        <Button
-          onClick={onClose}
-          variant="outlined"
-          sx={{
-            borderRadius: 2,
-            textTransform: 'none',
-            fontWeight: 'medium',
-          }}
-        >
-          Cancel
-        </Button>
-        <Button
-          type="submit"
-          variant="contained"
-          sx={{
-            borderRadius: 2,
-            textTransform: 'none',
-            fontWeight: 'medium',
-          }}
-        >
-          {evaluation ? 'Update Evaluation' : 'Create Evaluation'}
-        </Button>
-      </DialogActions>
     </form>
   );
 };

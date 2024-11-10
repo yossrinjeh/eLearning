@@ -48,6 +48,7 @@ const EvaluationsList = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [searchTerm, setSearchTerm] = useState('');
+  const { user } = useSelector((state) => state.auth);
 
   useEffect(() => {
     dispatch(fetchEvaluations());
@@ -85,6 +86,15 @@ const EvaluationsList = () => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
+
+  const filteredEvaluations = evaluations?.filter(evaluation => {
+    if (user?.role === 'admin') return true;
+    if (user?.role === 'trainer') {
+      const formation = formations.find(f => f.id === evaluation.formation_id);
+      return formation?.trainer_id === user?.id;
+    }
+    return false;
+  });
 
   return (
     <DashboardLayout>
@@ -162,8 +172,8 @@ const EvaluationsList = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {Array.isArray(evaluations) && evaluations.length > 0 ? (
-                    evaluations.map((evaluation) => (
+                  {Array.isArray(filteredEvaluations) && filteredEvaluations.length > 0 ? (
+                    filteredEvaluations.map((evaluation) => (
                       <TableRow 
                         key={evaluation.id}
                         hover

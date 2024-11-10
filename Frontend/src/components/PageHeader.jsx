@@ -5,42 +5,31 @@ const PageHeader = ({ title, onAdd, showAddButton = true }) => {
   return (
     <Box
       sx={{
+        mb: 4,
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        mb: 4,
-        py: 2,
       }}
     >
-      <Typography 
-        variant="h4" 
-        component="h1" 
-        sx={{
-          fontWeight: 700,
-          color: '#1e293b',
-          fontSize: { xs: '1.5rem', sm: '2rem' }
-        }}
-      >
+      <Typography variant="h4" component="h1" fontWeight="bold">
         {title}
       </Typography>
       {showAddButton && (
         <Button
           variant="contained"
-          startIcon={<AddIcon />}
           onClick={onAdd}
+          startIcon={<AddIcon />}
           sx={{
-            borderRadius: 2,
-            textTransform: 'none',
             px: 3,
             py: 1,
-            bgcolor: '#0f172a',
+            bgcolor: 'primary.main',
+            color: 'white',
             '&:hover': {
-              bgcolor: '#1e293b',
+              bgcolor: 'primary.dark',
             },
-            boxShadow: 'none',
           }}
         >
-          Add New {title.slice(0, -1)}
+          Add New
         </Button>
       )}
     </Box>

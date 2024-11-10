@@ -194,7 +194,7 @@ const App = () => {
             <Route
               path="/evaluations"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute roles={['admin', 'trainer']}>
                   {({ user }) => (
                     user?.role === 'student' ? <StudentEvaluationView /> : <EvaluationsList />
                   )}
@@ -204,7 +204,7 @@ const App = () => {
             <Route
               path="/student-evaluations"
               element={
-                <ProtectedRoute roles={['admin']}>
+                <ProtectedRoute roles={['admin', 'trainer']}>
                   <StudentEvaluationsList />
                 </ProtectedRoute>
               }

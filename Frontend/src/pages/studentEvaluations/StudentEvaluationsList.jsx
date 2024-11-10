@@ -22,13 +22,15 @@ import {
 } from '@mui/material';
 import { Edit as EditIcon, Delete as DeleteIcon, Search as SearchIcon } from '@mui/icons-material';
 import { fetchStudentEvaluations, deleteStudentEvaluation } from '../../features/studentEvaluations/studentEvaluationsSlice';
+import { fetchEvaluations } from '../../features/evaluations/evaluationsSlice';
+import { fetchFormations } from '../../features/formations/formationsSlice';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import StudentEvaluationForm from './StudentEvaluationForm';
 import PageHeader from '../../components/PageHeader';
 
 const StudentEvaluationsList = () => {
   const dispatch = useDispatch();
-  const { items: evaluations, loading, error, pagination } = useSelector(
+  const { items: studentEvaluations, loading, error, pagination } = useSelector(
     (state) => state.studentEvaluations
   );
   const [openForm, setOpenForm] = useState(false);
@@ -39,6 +41,8 @@ const StudentEvaluationsList = () => {
 
   useEffect(() => {
     dispatch(fetchStudentEvaluations());
+    dispatch(fetchEvaluations());
+    dispatch(fetchFormations());
   }, [dispatch, page, rowsPerPage]);
 
   const handleEdit = (evaluation) => {
@@ -67,6 +71,20 @@ const StudentEvaluationsList = () => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
+
+  const { user } = useSelector((state) => state.auth);
+  const formations = useSelector((state) => state.formations.items);
+  const allEvaluations = useSelector((state) => state.evaluations.items);
+
+  const filteredStudentEvaluations = studentEvaluations?.filter(se => {
+    if (user?.role === 'admin') return true;
+    if (user?.role === 'trainer') {
+      const evaluation = allEvaluations.find(e => e.id === se.evaluation_id);
+      const formation = formations.find(f => f.id === evaluation?.formation_id);
+      return formation?.trainer_id === user?.id;
+    }
+    return false;
+  });
 
   return (
     <DashboardLayout>
@@ -144,8 +162,8 @@ const StudentEvaluationsList = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {Array.isArray(evaluations) && evaluations.length > 0 ? (
-                    evaluations.map((evaluation) => (
+                  {Array.isArray(filteredStudentEvaluations) && filteredStudentEvaluations.length > 0 ? (
+                    filteredStudentEvaluations.map((evaluation) => (
                       <TableRow 
                         key={evaluation.id}
                         hover

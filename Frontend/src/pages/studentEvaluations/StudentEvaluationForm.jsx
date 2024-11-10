@@ -25,6 +25,8 @@ const StudentEvaluationForm = ({ studentEvaluation, onClose }) => {
   const dispatch = useDispatch();
   const evaluations = useSelector((state) => state.evaluations.items);
   const users = useSelector((state) => state.users.items);
+  const { user } = useSelector((state) => state.auth);
+  const formations = useSelector((state) => state.formations.items);
   
   const [formData, setFormData] = useState({
     evaluation_id: '',
@@ -67,6 +69,16 @@ const StudentEvaluationForm = ({ studentEvaluation, onClose }) => {
     }
   };
 
+  // Filter evaluations based on trainer's formations
+  const filteredEvaluations = evaluations.filter(evaluation => {
+    if (user?.role === 'admin') return true;
+    if (user?.role === 'trainer') {
+      const formation = formations.find(f => f.id === evaluation.formation_id);
+      return formation?.trainer_id === user?.id;
+    }
+    return false;
+  });
+
   return (
     <form onSubmit={handleSubmit}>
       <DialogTitle sx={{ m: 0, p: 2, pb: 1 }}>
@@ -99,7 +111,7 @@ const StudentEvaluationForm = ({ studentEvaluation, onClose }) => {
                 label="Evaluation"
                 sx={{ borderRadius: 2 }}
               >
-                {evaluations.map((evaluation) => (
+                {filteredEvaluations.map((evaluation) => (
                   <MenuItem key={evaluation.id} value={evaluation.id}>
                     {evaluation.title}
                   </MenuItem>

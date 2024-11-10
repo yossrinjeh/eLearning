@@ -86,9 +86,10 @@ const RoomsList = () => {
   };
 
   const filteredRooms = rooms?.filter(room =>
-    room.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    room.equipment.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+    room?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    room?.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    room?.capacity?.toString().includes(searchTerm)
+  ) || [];
 
   return (
     <DashboardLayout>

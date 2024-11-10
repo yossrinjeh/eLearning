@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../../services/api';
 import endpoints from '../../config/endpoints';
+import axios from 'axios';
 
 export const fetchFormations = createAsyncThunk(
   'formations/fetchFormations',
