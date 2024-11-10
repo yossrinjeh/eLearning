@@ -4,8 +4,6 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Cache\RateLimiting\Limit;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -21,7 +19,10 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'auth' => \Illuminate\Auth\Middleware\Authenticate::class,
+            'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
+            'auth.session' => \Illuminate\Session\Middleware\AuthenticateSession::class,
             'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+            'role' => \App\Http\Middleware\CheckRole::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

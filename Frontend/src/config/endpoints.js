@@ -70,6 +70,11 @@ export const endpoints = {
     update: (id) => `${BASE_URL}/users/${id}`,
     delete: (id) => `${BASE_URL}/users/${id}`,
   },
+
+  // Dashboard endpoints
+  dashboard: {
+    admin: '/dashboard/admin'
+  },
 };
 
 export default endpoints; 

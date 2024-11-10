@@ -74,7 +74,7 @@ const StudentEvaluationForm = ({ studentEvaluation, onClose }) => {
     if (user?.role === 'admin') return true;
     if (user?.role === 'trainer') {
       const formation = formations.find(f => f.id === evaluation.formation_id);
-      return formation?.trainer_id === user?.id;
+      return formation?.trainer?.id === user?.id;
     }
     return false;
   });

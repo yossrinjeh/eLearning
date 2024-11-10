@@ -63,7 +63,7 @@ const DashboardLayout = ({ children }) => {
   const drawer = (
     <div>
       <Box sx={{ p: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
-        <img src="/logo.svg" alt="Logo" style={{ width: 32, height: 32 }} />
+        <img src="/logo.png" alt="Logo" style={{ width: 32, height: 32 }} />
         <Typography variant="h6" sx={{ color: 'white', fontWeight: 600 }}>
           E-Learning
         </Typography>

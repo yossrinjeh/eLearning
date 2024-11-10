@@ -24,15 +24,20 @@ import { Edit as EditIcon, Delete as DeleteIcon, Search as SearchIcon } from '@m
 import { fetchStudentEvaluations, deleteStudentEvaluation } from '../../features/studentEvaluations/studentEvaluationsSlice';
 import { fetchEvaluations } from '../../features/evaluations/evaluationsSlice';
 import { fetchFormations } from '../../features/formations/formationsSlice';
+import { fetchUsers } from '../../features/users/usersSlice';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import StudentEvaluationForm from './StudentEvaluationForm';
 import PageHeader from '../../components/PageHeader';
 
 const StudentEvaluationsList = () => {
   const dispatch = useDispatch();
-  const { items: studentEvaluations, loading, error, pagination } = useSelector(
+  const { items: studentEvaluations, loading, pagination } = useSelector(
     (state) => state.studentEvaluations
   );
+  const evaluations = useSelector((state) => state.evaluations.items);
+  const formations = useSelector((state) => state.formations.items);
+  const users = useSelector((state) => state.users.items);
+  const { user } = useSelector((state) => state.auth);
   const [openForm, setOpenForm] = useState(false);
   const [selectedEvaluation, setSelectedEvaluation] = useState(null);
   const [page, setPage] = useState(0);
@@ -43,7 +48,38 @@ const StudentEvaluationsList = () => {
     dispatch(fetchStudentEvaluations());
     dispatch(fetchEvaluations());
     dispatch(fetchFormations());
-  }, [dispatch, page, rowsPerPage]);
+    dispatch(fetchUsers());
+  }, [dispatch]);
+
+  // Filter student evaluations for trainer
+  const filteredStudentEvaluations = studentEvaluations?.filter(studentEval => {
+    if (user?.role === 'admin') return true;
+    if (user?.role === 'trainer') {
+      // Find the evaluation
+      const evaluation = evaluations.find(e => e.id === studentEval.evaluation_id);
+      // Find the formation for this evaluation
+      const formation = formations.find(f => f.id === evaluation?.formation_id);
+      // Check if the trainer is assigned to this formation
+      return formation?.trainer?.id === user?.id;
+    }
+    return false;
+  });
+
+  const getEvaluationTitle = (evaluationId) => {
+    const evaluation = evaluations.find(e => e.id === evaluationId);
+    return evaluation ? evaluation.title : 'Unknown Evaluation';
+  };
+
+  const getFormationTitle = (evaluationId) => {
+    const evaluation = evaluations.find(e => e.id === evaluationId);
+    const formation = formations.find(f => f.id === evaluation?.formation_id);
+    return formation ? formation.title : 'Unknown Formation';
+  };
+
+  const getStudentName = (userId) => {
+    const student = users.find(u => u.id === userId);
+    return student ? `${student.firstname} ${student.lastname}` : 'Unknown Student';
+  };
 
   const handleEdit = (evaluation) => {
     setSelectedEvaluation(evaluation);
@@ -72,204 +108,73 @@ const StudentEvaluationsList = () => {
     setPage(0);
   };
 
-  const { user } = useSelector((state) => state.auth);
-  const formations = useSelector((state) => state.formations.items);
-  const allEvaluations = useSelector((state) => state.evaluations.items);
-
-  const filteredStudentEvaluations = studentEvaluations?.filter(se => {
-    if (user?.role === 'admin') return true;
-    if (user?.role === 'trainer') {
-      const evaluation = allEvaluations.find(e => e.id === se.evaluation_id);
-      const formation = formations.find(f => f.id === evaluation?.formation_id);
-      return formation?.trainer_id === user?.id;
-    }
-    return false;
-  });
-
   return (
     <DashboardLayout>
       <Box sx={{ width: '100%' }}>
         <PageHeader 
           title="Student Evaluations" 
-          onAdd={() => setOpenForm(true)} 
+          onAdd={() => setOpenForm(true)}
+          showAddButton={true}
         />
 
-        <Box sx={{ mb: 4 }}>
-          <TextField
-            fullWidth
-            placeholder="Search student evaluations..."
-            onChange={(e) => setSearchTerm(e.target.value)}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon sx={{ color: 'text.secondary' }} />
-                </InputAdornment>
-              ),
-            }}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                bgcolor: 'white',
-                borderRadius: 2,
-                '&:hover .MuiOutlinedInput-notchedOutline': {
-                  borderColor: 'primary.main',
-                },
-              },
-            }}
-          />
-        </Box>
-
-        {loading ? (
-          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-            <CircularProgress />
-          </Box>
-        ) : error ? (
-          <Paper 
-            sx={{ 
-              p: 3, 
-              bgcolor: '#FEE2E2', 
-              color: '#DC2626',
-              borderRadius: 2,
-            }}
-          >
-            <Typography>{error}</Typography>
-          </Paper>
-        ) : (
-          <Paper 
-            sx={{ 
-              width: '100%', 
-              overflow: 'hidden',
-              borderRadius: 2,
-              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-            }}
-          >
-            <TableContainer>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    {['Evaluation', 'Student', 'Score', 'Comments', 'Actions'].map((header) => (
-                      <TableCell 
-                        key={header}
-                        sx={{ 
-                          fontWeight: 600,
-                          bgcolor: '#f8fafc',
-                          borderBottom: '2px solid',
-                          borderColor: 'divider',
-                        }}
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Student</TableCell>
+                <TableCell>Evaluation</TableCell>
+                <TableCell>Formation</TableCell>
+                <TableCell>Score</TableCell>
+                <TableCell>Comments</TableCell>
+                <TableCell>Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {filteredStudentEvaluations?.map((studentEval) => (
+                <TableRow key={studentEval.id}>
+                  <TableCell>{getStudentName(studentEval.user_id)}</TableCell>
+                  <TableCell>{getEvaluationTitle(studentEval.evaluation_id)}</TableCell>
+                  <TableCell>{getFormationTitle(studentEval.evaluation_id)}</TableCell>
+                  <TableCell>{studentEval.score}%</TableCell>
+                  <TableCell>{studentEval.comments}</TableCell>
+                  <TableCell>
+                    <Box sx={{ display: 'flex', gap: 1 }}>
+                      <IconButton
+                        size="small"
+                        onClick={() => handleEdit(studentEval)}
+                        color="primary"
                       >
-                        {header}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {Array.isArray(filteredStudentEvaluations) && filteredStudentEvaluations.length > 0 ? (
-                    filteredStudentEvaluations.map((evaluation) => (
-                      <TableRow 
-                        key={evaluation.id}
-                        hover
-                        sx={{
-                          '&:hover': {
-                            bgcolor: '#f8fafc',
-                          },
-                        }}
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton
+                        size="small"
+                        onClick={() => handleDelete(studentEval.id)}
+                        color="error"
                       >
-                        <TableCell>
-                          <Typography fontWeight="medium">{evaluation.evaluation_id}</Typography>
-                        </TableCell>
-                        <TableCell>{evaluation.user_id}</TableCell>
-                        <TableCell>
-                          <Chip
-                            label={`${evaluation.score}%`}
-                            color={evaluation.score >= 70 ? 'success' : evaluation.score >= 50 ? 'warning' : 'error'}
-                            size="small"
-                            sx={{ fontWeight: 'medium' }}
-                          />
-                        </TableCell>
-                        <TableCell>{evaluation.comments}</TableCell>
-                        <TableCell>
-                          <Stack direction="row" spacing={1}>
-                            <IconButton
-                              onClick={() => handleEdit(evaluation)}
-                              size="small"
-                              sx={{
-                                bgcolor: 'primary.50',
-                                color: 'primary.main',
-                                '&:hover': { 
-                                  bgcolor: 'primary.100',
-                                  transform: 'scale(1.1)',
-                                },
-                                transition: 'transform 0.2s',
-                              }}
-                            >
-                              <EditIcon fontSize="small" />
-                            </IconButton>
-                            <IconButton
-                              onClick={() => handleDelete(evaluation.id)}
-                              size="small"
-                              sx={{
-                                bgcolor: 'error.50',
-                                color: 'error.main',
-                                '&:hover': { 
-                                  bgcolor: 'error.100',
-                                  transform: 'scale(1.1)',
-                                },
-                                transition: 'transform 0.2s',
-                              }}
-                            >
-                              <DeleteIcon fontSize="small" />
-                            </IconButton>
-                          </Stack>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={5} align="center" sx={{ py: 8 }}>
-                        <Typography variant="subtitle1" color="text.secondary">
-                          No student evaluations available
-                        </Typography>
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </TableContainer>
-            <Box 
-              sx={{ 
-                p: 2, 
-                borderTop: 1, 
-                borderColor: 'divider',
-                bgcolor: '#f8fafc',
-              }}
-            >
-              <TablePagination
-                component="div"
-                count={pagination.totalItems}
-                page={page}
-                onPageChange={handleChangePage}
-                rowsPerPage={rowsPerPage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-                sx={{
-                  '.MuiTablePagination-select': {
-                    borderRadius: 1,
-                  },
-                }}
-              />
-            </Box>
-          </Paper>
-        )}
+                        <DeleteIcon />
+                      </IconButton>
+                    </Box>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
 
-        <Dialog 
-          open={openForm} 
-          onClose={handleCloseForm} 
-          maxWidth="sm" 
+        <TablePagination
+          component="div"
+          count={pagination?.total || 0}
+          page={page}
+          onPageChange={handleChangePage}
+          rowsPerPage={rowsPerPage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
+
+        <Dialog
+          open={openForm}
+          onClose={handleCloseForm}
+          maxWidth="md"
           fullWidth
-          PaperProps={{
-            sx: { 
-              borderRadius: 3,
-              boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
-            }
-          }}
         >
           <StudentEvaluationForm
             studentEvaluation={selectedEvaluation}

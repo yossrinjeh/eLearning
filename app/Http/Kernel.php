@@ -17,4 +17,16 @@ class Kernel extends HttpKernel
         // ... other middlewares
         'role' => \App\Http\Middleware\CheckRole::class,
     ];
+
+    /**
+     * The application's route middleware aliases.
+     *
+     * Aliases may be used instead of class names to assign middleware to routes and groups.
+     *
+     * @var array
+     */
+    protected $middlewareAliases = [
+        // ... other middleware aliases
+        'role' => \App\Http\Middleware\CheckRole::class,
+    ];
 } 

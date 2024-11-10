@@ -14,6 +14,7 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  DialogActions,
 } from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';
 import { createEvaluation, updateEvaluation } from '../../features/evaluations/evaluationsSlice';
@@ -66,7 +67,7 @@ const EvaluationForm = ({ evaluation, onClose }) => {
   const filteredFormations = formations?.filter(formation => {
     if (user?.role === 'admin') return true;
     if (user?.role === 'trainer') {
-      return formation.trainer_id === user?.id;
+      return formation.trainer?.id === user?.id;
     }
     return false;
   });
@@ -94,6 +95,39 @@ const EvaluationForm = ({ evaluation, onClose }) => {
       <DialogContent sx={{ p: 3 }}>
         <Grid container spacing={3}>
           <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Title"
+              name="title"
+              value={formData.title}
+              onChange={handleChange}
+              required
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Description"
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              multiline
+              rows={3}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label="Date"
+              name="date"
+              type="date"
+              value={formData.date}
+              onChange={handleChange}
+              InputLabelProps={{ shrink: true }}
+              required
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
             <FormControl fullWidth required>
               <InputLabel>Formation</InputLabel>
               <Select
@@ -101,7 +135,6 @@ const EvaluationForm = ({ evaluation, onClose }) => {
                 value={formData.formation_id}
                 onChange={handleChange}
                 label="Formation"
-                sx={{ borderRadius: 2 }}
               >
                 {filteredFormations.map((formation) => (
                   <MenuItem key={formation.id} value={formation.id}>
@@ -111,67 +144,14 @@ const EvaluationForm = ({ evaluation, onClose }) => {
               </Select>
             </FormControl>
           </Grid>
-          <Grid item xs={12}>
-            <TextField
-              required
-              fullWidth
-              label="Title"
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
-              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              required
-              fullWidth
-              label="Description"
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              multiline
-              rows={3}
-              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              required
-              fullWidth
-              type="date"
-              label="Date"
-              name="date"
-              value={formData.date}
-              onChange={handleChange}
-              InputLabelProps={{ shrink: true }}
-              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
-            />
-          </Grid>
         </Grid>
-        <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
-          <Button
-            onClick={onClose}
-            sx={{
-              color: 'text.secondary',
-              '&:hover': { bgcolor: 'grey.100' },
-            }}
-          >
-            Cancel
-          </Button>
-          <Button
-            type="submit"
-            variant="contained"
-            sx={{
-              bgcolor: 'primary.main',
-              color: 'white',
-              '&:hover': { bgcolor: 'primary.dark' },
-            }}
-          >
-            {evaluation ? 'Update' : 'Create'}
-          </Button>
-        </Box>
       </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose}>Cancel</Button>
+        <Button type="submit" variant="contained" color="primary">
+          {evaluation ? 'Update' : 'Create'}
+        </Button>
+      </DialogActions>
     </form>
   );
 };
