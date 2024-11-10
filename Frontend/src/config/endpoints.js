@@ -73,7 +73,9 @@ export const endpoints = {
 
   // Dashboard endpoints
   dashboard: {
-    admin: '/dashboard/admin'
+    admin: `${BASE_URL}/dashboard/admin`,
+    trainer: `${BASE_URL}/dashboard/trainer`,
+    student: `${BASE_URL}/dashboard/student`,
   },
 };
 

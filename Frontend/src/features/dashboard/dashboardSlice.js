@@ -5,9 +5,10 @@ import endpoints from '../../config/endpoints';
 // Create async thunk for fetching dashboard data
 export const fetchDashboardData = createAsyncThunk(
   'dashboard/fetchData',
-  async (_, { rejectWithValue }) => {
+  async (role, { rejectWithValue }) => {
     try {
-      const response = await api.get(endpoints.dashboard.admin);
+      const endpoint = endpoints.dashboard[role] || endpoints.dashboard.student;
+      const response = await api.get(endpoint);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Error fetching dashboard data');
