@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useLocation } from 'react-router-dom';
 import {
   Box,
   Container,
@@ -24,6 +24,7 @@ import {
 import api from '../services/api';
 import endpoints from '../config/endpoints';
 import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 
 const formatDate = (dateString) => {
   if (!dateString) return '';
@@ -40,6 +41,7 @@ const Home = () => {
   const [trainers, setTrainers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
+  const location = useLocation();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -59,6 +61,17 @@ const Home = () => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    if (location.state?.scrollTo) {
+      const element = document.getElementById(location.state.scrollTo);
+      if (element) {
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      }
+    }
+  }, [location.state]);
+
   const handleSearch = async () => {
     try {
       setLoading(true);
@@ -72,7 +85,7 @@ const Home = () => {
   };
 
   return (
-    <Box sx={{ bgcolor: 'background.default', minHeight: '100vh' }}>
+    <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Navbar />
       
       {/* Hero Section */}
@@ -164,7 +177,7 @@ const Home = () => {
         </Container>
       </Box>
 
-      <Container maxWidth="lg">
+      <Container maxWidth="lg" sx={{ flex: 1 }}>
         {loading ? (
           <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
             <CircularProgress />
@@ -346,6 +359,8 @@ const Home = () => {
           </Button>
         </Box>
       </Container>
+
+      <Footer />
     </Box>
   );
 };

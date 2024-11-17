@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useLocation, useNavigate } from 'react-router-dom';
 import {
   AppBar,
   Box,
@@ -28,12 +28,31 @@ function HideOnScroll({ children }) {
 const Navbar = () => {
   const [anchorElNav, setAnchorElNav] = useState(null);
   const [isScrolled, setIsScrolled] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const pages = [
     { title: 'About Us', path: '/about' },
-    { title: 'Formations', path: '/#formations' },
-    { title: 'Trainers', path: '/#trainers' },
+    { title: 'Formations', path: 'formations' },
+    { title: 'Trainers', path: 'trainers' },
   ];
+
+  const handleNavClick = (path) => {
+    handleCloseNavMenu();
+    
+    if (path === 'formations' || path === 'trainers') {
+      if (location.pathname !== '/') {
+        navigate('/', { state: { scrollTo: path } });
+      } else {
+        const element = document.getElementById(path);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+    } else {
+      navigate(path);
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -121,9 +140,7 @@ const Navbar = () => {
                 {pages.map((page) => (
                   <MenuItem 
                     key={page.title} 
-                    onClick={handleCloseNavMenu}
-                    component={RouterLink}
-                    to={page.path}
+                    onClick={() => handleNavClick(page.path)}
                   >
                     <Typography textAlign="center">{page.title}</Typography>
                   </MenuItem>
@@ -156,9 +173,7 @@ const Navbar = () => {
               {pages.map((page) => (
                 <Button
                   key={page.title}
-                  component={RouterLink}
-                  to={page.path}
-                  onClick={handleCloseNavMenu}
+                  onClick={() => handleNavClick(page.path)}
                   sx={{
                     my: 2,
                     mx: 1,
