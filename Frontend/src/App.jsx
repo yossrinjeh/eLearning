@@ -5,7 +5,9 @@ import CssBaseline from '@mui/material/CssBaseline';
 import store from './app/store';
 import ProtectedRoute from './components/ProtectedRoute';
 import { GlobalStyles } from '@mui/material';
-
+import PrivacyPolicy from './pages/static/PrivacyPolicy';
+import TermsOfService from './pages/static/TermsOfService';
+import CookiePolicy from './pages/static/CookiePolicy';
 // Import pages
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
@@ -230,6 +232,9 @@ const App = () => {
               }
             />
             <Route path="/about" element={<AboutUs />} />
+            <Route path="/privacy" element={<PrivacyPolicy />} />
+            <Route path="/terms" element={<TermsOfService />} />
+            <Route path="/cookie-policy" element={<CookiePolicy />} />
           </Routes>
         </Router>
       </ThemeProvider>
