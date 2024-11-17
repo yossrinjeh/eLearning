@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import {
   Grid,
   Card,
@@ -17,6 +18,7 @@ import {
   DialogActions,
   Button,
   CircularProgress,
+  Alert,
 } from '@mui/material';
 import { 
   Search as SearchIcon, 
@@ -46,11 +48,23 @@ const StudentFormationsList = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFormation, setSelectedFormation] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     dispatch(fetchFormations());
     dispatch(fetchEnrollments());
-  }, [dispatch]);
+  }, []);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const enrollId = params.get('enroll');
+    if (enrollId && formations?.length > 0) {
+      const formation = formations.find(f => f.id === parseInt(enrollId));
+      if (formation) {
+        handleEnrollClick(formation);
+      }
+    }
+  }, [location.search, formations]);
 
   const handleEnrollClick = (formation) => {
     setSelectedFormation(formation);
@@ -58,7 +72,7 @@ const StudentFormationsList = () => {
   };
 
   const handleConfirmEnroll = async () => {
-    if (selectedFormation && user) {
+    if (selectedFormation) {
       const enrollmentData = {
         formation_id: selectedFormation.id,
         user_id: user.id,
@@ -67,7 +81,7 @@ const StudentFormationsList = () => {
       };
 
       await dispatch(createEnrollment(enrollmentData));
-      dispatch(fetchEnrollments()); // Refresh enrollments after creating new one
+      dispatch(fetchEnrollments());
       setOpenDialog(false);
       setSelectedFormation(null);
     }
@@ -128,6 +142,23 @@ const StudentFormationsList = () => {
           <Grid container spacing={3}>
             {formations?.map((formation) => {
               const { seatsLeft, userEnrollment } = getFormationDetails(formation);
+              
+              if (userEnrollment && (userEnrollment.status === 'pending' || userEnrollment.status === 'rejected')) {
+                return (
+                  <Grid item xs={12} key={formation.id}>
+                    <Alert 
+                      severity={userEnrollment.status === 'pending' ? 'warning' : 'error'}
+                      sx={{ mb: 2 }}
+                    >
+                      {userEnrollment.status === 'pending' 
+                        ? `Your enrollment for "${formation.title}" is pending approval.`
+                        : `Your enrollment for "${formation.title}" was rejected.`
+                      }
+                    </Alert>
+                  </Grid>
+                );
+              }
+
               return (
                 <Grid item xs={12} sm={6} md={4} key={formation.id}>
                   <Card 

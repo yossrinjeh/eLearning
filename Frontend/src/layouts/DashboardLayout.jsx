@@ -22,6 +22,7 @@ import {
   Grade as StudentEvaluationIcon,
   Group as TrainerIcon,
   Logout as LogoutIcon,
+  Group as UsersIcon,
 } from '@mui/icons-material';
 import { logout } from '../features/auth/authSlice';
 
@@ -37,6 +38,7 @@ const DashboardLayout = ({ children }) => {
 
   const menuItems = [
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard', roles: ['admin', 'trainer', 'student'] },
+    { text: 'Users', icon: <UsersIcon />, path: '/users', roles: ['admin'] },
     { text: 'Rooms', icon: <RoomIcon />, path: '/rooms', roles: ['admin'] },
     { text: 'Formations', icon: <FormationIcon />, path: '/formations', roles: ['admin', 'trainer', 'student'] },
     { text: 'Enrollments', icon: <EnrollmentIcon />, path: '/enrollments', roles: ['admin'] },

@@ -20,9 +20,7 @@ import StudentFormationsList from './pages/student/StudentFormationsList';
 import StudentEvaluationView from './pages/student/StudentEvaluationView';
 import Home from './pages/Home';
 import AboutUs from './pages/AboutUs';
-import PrivacyPolicy from './pages/static/PrivacyPolicy';
-import TermsOfService from './pages/static/TermsOfService';
-import CookiePolicy from './pages/static/CookiePolicy';
+import UsersList from './pages/users/UsersList';
 
 const theme = createTheme({
   palette: {
@@ -223,10 +221,15 @@ const App = () => {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/users"
+              element={
+                <ProtectedRoute roles={['admin']}>
+                  <UsersList />
+                </ProtectedRoute>
+              }
+            />
             <Route path="/about" element={<AboutUs />} />
-            <Route path="/privacy" element={<PrivacyPolicy />} />
-            <Route path="/terms" element={<TermsOfService />} />
-            <Route path="/cookie-policy" element={<CookiePolicy />} />
           </Routes>
         </Router>
       </ThemeProvider>
