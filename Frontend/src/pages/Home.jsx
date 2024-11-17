@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link as RouterLink, useLocation } from 'react-router-dom';
+import { Link as RouterLink, useLocation, useNavigate } from 'react-router-dom';
 import {
   Box,
   Container,
@@ -25,6 +25,7 @@ import api from '../services/api';
 import endpoints from '../config/endpoints';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import { useSelector } from 'react-redux';
 
 const formatDate = (dateString) => {
   if (!dateString) return '';
@@ -42,6 +43,8 @@ const Home = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
   const location = useLocation();
+  const { isAuthenticated } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -81,6 +84,14 @@ const Home = () => {
       console.error('Error searching formations:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleEnroll = (formationId) => {
+    if (isAuthenticated) {
+      navigate(`/formations?enroll=${formationId}`);
+    } else {
+      navigate('/login');
     }
   };
 
@@ -239,17 +250,40 @@ const Home = () => {
                             </Box>
                           </Grid>
                         </Grid>
-                        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                          <Chip
-                            label={`${formation.seats_left} seats left`}
-                            color={formation.seats_left > 0 ? 'success' : 'error'}
-                            size="small"
-                          />
-                          <Chip
-                            label={`${formation.duration} days`}
+                        <Box sx={{ 
+                          display: 'flex', 
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          mt: 2 
+                        }}>
+                          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                            <Chip
+                              label={`${formation.seats_left} seats left`}
+                              color={formation.seats_left > 0 ? 'success' : 'error'}
+                              size="small"
+                            />
+                            <Chip
+                              label={`${formation.duration} days`}
+                              color="primary"
+                              size="small"
+                            />
+                          </Box>
+                          <Button
+                            variant="contained"
                             color="primary"
-                            size="small"
-                          />
+                            onClick={() => handleEnroll(formation.id)}
+                            disabled={formation.seats_left === 0}
+                            sx={{
+                              textTransform: 'none',
+                              px: 3,
+                              '&:disabled': {
+                                bgcolor: 'grey.300',
+                                color: 'grey.500',
+                              },
+                            }}
+                          >
+                            {formation.seats_left === 0 ? 'Full' : 'Enroll Now'}
+                          </Button>
                         </Box>
                       </CardContent>
                     </Card>
