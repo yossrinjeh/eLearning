@@ -31,6 +31,9 @@ const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
+  // Check if we're on the home page
+  const isHomePage = location.pathname === '/';
+
   const pages = [
     { title: 'About Us', path: '/about' },
     { title: 'Formations', path: 'formations' },
@@ -75,8 +78,10 @@ const Navbar = () => {
       <AppBar 
         position="fixed" 
         sx={{
-          bgcolor: isScrolled ? 'rgba(255, 255, 255, 0.95)' : 'transparent',
-          boxShadow: isScrolled ? 1 : 'none',
+          bgcolor: isHomePage 
+            ? (isScrolled ? 'rgba(255, 255, 255, 0.95)' : 'transparent')
+            : 'rgba(255, 255, 255, 0.95)',
+          boxShadow: isHomePage ? (isScrolled ? 1 : 'none') : 1,
           backdropFilter: 'blur(8px)',
           transition: 'all 0.3s',
         }}
@@ -88,7 +93,9 @@ const Navbar = () => {
               sx={{ 
                 display: { xs: 'none', md: 'flex' }, 
                 mr: 1,
-                color: isScrolled ? 'primary.main' : 'white'
+                color: isHomePage 
+                  ? (isScrolled ? 'primary.main' : 'white')
+                  : 'primary.main'
               }} 
             />
             <Typography
@@ -100,7 +107,9 @@ const Navbar = () => {
                 mr: 2,
                 display: { xs: 'none', md: 'flex' },
                 fontWeight: 700,
-                color: isScrolled ? 'primary.main' : 'white',
+                color: isHomePage 
+                  ? (isScrolled ? 'primary.main' : 'white')
+                  : 'primary.main',
                 textDecoration: 'none',
                 letterSpacing: '.1rem',
               }}
@@ -108,17 +117,23 @@ const Navbar = () => {
               E-LEARNING
             </Typography>
 
+            {/* Mobile menu icon */}
+            <IconButton
+              size="large"
+              aria-controls="menu-appbar"
+              aria-haspopup="true"
+              onClick={handleOpenNavMenu}
+              sx={{ 
+                color: isHomePage 
+                  ? (isScrolled ? 'primary.main' : 'white')
+                  : 'primary.main' 
+              }}
+            >
+              <MenuIcon />
+            </IconButton>
+
             {/* Mobile menu */}
             <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
-              <IconButton
-                size="large"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={handleOpenNavMenu}
-                sx={{ color: isScrolled ? 'primary.main' : 'white' }}
-              >
-                <MenuIcon />
-              </IconButton>
               <Menu
                 id="menu-appbar"
                 anchorEl={anchorElNav}
@@ -149,7 +164,15 @@ const Navbar = () => {
             </Box>
 
             {/* Logo - Mobile */}
-            <SchoolIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1, color: isScrolled ? 'primary.main' : 'white' }} />
+            <SchoolIcon 
+              sx={{ 
+                display: { xs: 'flex', md: 'none' }, 
+                mr: 1, 
+                color: isHomePage 
+                  ? (isScrolled ? 'primary.main' : 'white')
+                  : 'primary.main'
+              }} 
+            />
             <Typography
               variant="h5"
               noWrap
@@ -160,7 +183,9 @@ const Navbar = () => {
                 display: { xs: 'flex', md: 'none' },
                 flexGrow: 1,
                 fontWeight: 700,
-                color: isScrolled ? 'primary.main' : 'white',
+                color: isHomePage 
+                  ? (isScrolled ? 'primary.main' : 'white')
+                  : 'primary.main',
                 textDecoration: 'none',
                 letterSpacing: '.1rem',
               }}
@@ -177,10 +202,14 @@ const Navbar = () => {
                   sx={{
                     my: 2,
                     mx: 1,
-                    color: isScrolled ? 'text.primary' : 'white',
+                    color: isHomePage 
+                      ? (isScrolled ? 'text.primary' : 'white')
+                      : 'text.primary',
                     display: 'block',
                     '&:hover': {
-                      color: isScrolled ? 'primary.main' : 'rgba(255, 255, 255, 0.8)',
+                      color: isHomePage 
+                        ? (isScrolled ? 'primary.main' : 'rgba(255, 255, 255, 0.8)')
+                        : 'primary.main',
                     },
                   }}
                 >
@@ -196,9 +225,13 @@ const Navbar = () => {
                 to="/login"
                 variant="text"
                 sx={{
-                  color: isScrolled ? 'text.primary' : 'white',
+                  color: isHomePage 
+                    ? (isScrolled ? 'text.primary' : 'white')
+                    : 'text.primary',
                   '&:hover': {
-                    color: isScrolled ? 'primary.main' : 'rgba(255, 255, 255, 0.8)',
+                    color: isHomePage 
+                      ? (isScrolled ? 'primary.main' : 'rgba(255, 255, 255, 0.8)')
+                      : 'primary.main',
                   },
                 }}
               >
@@ -209,10 +242,16 @@ const Navbar = () => {
                 to="/register"
                 variant="contained"
                 sx={{
-                  bgcolor: isScrolled ? 'primary.main' : 'white',
-                  color: isScrolled ? 'white' : 'primary.main',
+                  bgcolor: isHomePage 
+                    ? (isScrolled ? 'primary.main' : 'white')
+                    : 'primary.main',
+                  color: isHomePage 
+                    ? (isScrolled ? 'white' : 'primary.main')
+                    : 'white',
                   '&:hover': {
-                    bgcolor: isScrolled ? 'primary.dark' : 'rgba(255, 255, 255, 0.9)',
+                    bgcolor: isHomePage 
+                      ? (isScrolled ? 'primary.dark' : 'rgba(255, 255, 255, 0.9)')
+                      : 'primary.dark',
                   },
                 }}
               >
