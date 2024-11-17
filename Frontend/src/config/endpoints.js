@@ -77,6 +77,13 @@ export const endpoints = {
     trainer: `${BASE_URL}/dashboard/trainer`,
     student: `${BASE_URL}/dashboard/student`,
   },
+
+  // Public endpoints
+  public: {
+    formations: `${BASE_URL}/public/formations`,
+    trainers: `${BASE_URL}/public/trainers`,
+    searchFormations: `${BASE_URL}/public/formations/search`,
+  },
 };
 
 export default endpoints; 

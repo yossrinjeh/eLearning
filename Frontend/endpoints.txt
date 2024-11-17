@@ -312,4 +312,80 @@ DELETE /trainers/{id}
 Headers:
 Authorization: Bearer {token}
 
-Note: All responses include pagination for list endpoints and proper error messages for failed requests. 
+PUBLIC API ENDPOINTS
+===================
+
+BASE URL: https://elearning.test/api
+
+1. Get All Upcoming Formations
+GET /public/formations
+Response:
+[
+    {
+        "id": 1,
+        "title": "Laravel Masterclass",
+        "description": "Advanced Laravel Training",
+        "start_date": "2024-04-01",
+        "end_date": "2024-04-30",
+        "duration": 30,
+        "max_capacity": 20,
+        "seats_left": 15,
+        "status": "upcoming",
+        "trainer": {
+            "id": 1,
+            "name": "John Doe",
+            "specialities": "Laravel, React",
+            "experience": "5 years"
+        },
+        "room": {
+            "name": "Room 101",
+            "capacity": 30
+        }
+    }
+]
+
+2. Get Active Trainers
+GET /public/trainers
+Response:
+[
+    {
+        "id": 1,
+        "name": "John Doe",
+        "specialities": "Laravel, React",
+        "experience": "5 years",
+        "formations_count": 5
+    }
+]
+
+3. Search Formations
+GET /public/formations/search?query=your_search_term
+Response:
+[
+    {
+        "id": 1,
+        "title": "Laravel Masterclass",
+        "description": "Advanced Laravel Training",
+        "start_date": "2024-04-01",
+        "end_date": "2024-04-30",
+        "duration": 30,
+        "max_capacity": 20,
+        "seats_left": 15,
+        "status": "upcoming",
+        "trainer": {
+            "id": 1,
+            "name": "John Doe",
+            "specialities": "Laravel, React",
+            "experience": "5 years"
+        },
+        "room": {
+            "name": "Room 101",
+            "capacity": 30
+        }
+    }
+]
+
+Notes:
+- No authentication required for these endpoints
+- All dates are in ISO 8601 format
+- seats_left is calculated from max_capacity minus current enrollments
+- formations_count shows total formations for each trainer 

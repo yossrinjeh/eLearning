@@ -9,11 +9,15 @@ use App\Http\Controllers\Api\EvaluationController;
 use App\Http\Controllers\Api\StudentEvaluationController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\Api\PublicController;
 use Illuminate\Support\Facades\Route;
 
 // Public routes
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
+Route::get('public/formations', [PublicController::class, 'getPublicFormations']);
+Route::get('public/trainers', [PublicController::class, 'getActiveTrainers']);
+Route::get('public/formations/search', [PublicController::class, 'searchFormations']);
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
