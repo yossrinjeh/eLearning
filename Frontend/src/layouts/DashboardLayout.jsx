@@ -1,45 +1,34 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { logout } from '../features/auth/authSlice';
+import { useNavigate, Link } from 'react-router-dom';
 import {
-  AppBar,
   Box,
-  CssBaseline,
   Drawer,
-  IconButton,
   List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Toolbar,
   Typography,
   Divider,
-  Container,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
 } from '@mui/material';
 import {
-  Menu as MenuIcon,
+  School as SchoolIcon,
   Dashboard as DashboardIcon,
   MeetingRoom as RoomIcon,
   School as FormationIcon,
   Assignment as EnrollmentIcon,
-  Assessment as EvaluationIcon,
-  AssignmentInd as StudentEvaluationIcon,
-  Person as TrainerIcon,
+  AssignmentTurnedIn as EvaluationIcon,
+  Grade as StudentEvaluationIcon,
+  Group as TrainerIcon,
   Logout as LogoutIcon,
 } from '@mui/icons-material';
-
-const drawerWidth = 280;
+import { logout } from '../features/auth/authSlice';
 
 const DashboardLayout = ({ children }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
-  const [mobileOpen, setMobileOpen] = useState(false);
-
-  const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
-  };
 
   const handleLogout = () => {
     dispatch(logout());
@@ -61,110 +50,88 @@ const DashboardLayout = ({ children }) => {
   );
 
   const drawer = (
-    <div>
-      <Box sx={{ p: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
-        <img src="/logo.png" alt="Logo" style={{ width: 32, height: 32 }} />
-        <Typography variant="h6" sx={{ color: 'white', fontWeight: 600 }}>
-          E-Learning
+    <Box>
+      {/* Logo Section */}
+      <Box sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+        <SchoolIcon sx={{ color: 'white' }} />
+        <Typography variant="h6" color="white" noWrap>
+          E-LEARNING
         </Typography>
       </Box>
-      <Divider sx={{ borderColor: 'rgba(255,255,255,0.12)' }} />
-      <List sx={{ px: 2 }}>
+      <Divider sx={{ bgcolor: 'rgba(255, 255, 255, 0.12)' }} />
+      
+      {/* Menu Items */}
+      <List>
         {filteredMenuItems.map((item) => (
-          <ListItem
-            key={item.text}
-            onClick={() => navigate(item.path)}
-            component="div"
+          <ListItem key={item.text} disablePadding>
+            <ListItemButton
+              component={Link}
+              to={item.path}
+              sx={{
+                minHeight: 48,
+                px: 2.5,
+                '&:hover': {
+                  bgcolor: 'rgba(255, 255, 255, 0.08)',
+                },
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: 3,
+                  justifyContent: 'center',
+                  color: 'inherit',
+                }}
+              >
+                {item.icon}
+              </ListItemIcon>
+              <ListItemText primary={item.text} />
+            </ListItemButton>
+          </ListItem>
+        ))}
+        <Divider sx={{ my: 1, bgcolor: 'rgba(255, 255, 255, 0.12)' }} />
+        <ListItem disablePadding>
+          <ListItemButton
+            onClick={handleLogout}
             sx={{
-              mb: 1,
-              borderRadius: 2,
-              cursor: 'pointer',
+              minHeight: 48,
+              px: 2.5,
               '&:hover': {
-                backgroundColor: 'rgba(255,255,255,0.08)',
+                bgcolor: 'rgba(255, 255, 255, 0.08)',
               },
             }}
           >
-            <ListItemIcon sx={{ color: 'white', minWidth: 40 }}>
-              {item.icon}
+            <ListItemIcon
+              sx={{
+                minWidth: 0,
+                mr: 3,
+                justifyContent: 'center',
+                color: 'inherit',
+              }}
+            >
+              <LogoutIcon />
             </ListItemIcon>
-            <ListItemText 
-              primary={item.text} 
-              sx={{ 
-                '& .MuiListItemText-primary': { 
-                  fontWeight: 500,
-                  fontSize: '0.875rem',
-                } 
-              }} 
-            />
-          </ListItem>
-        ))}
-        <Divider sx={{ my: 2, borderColor: 'rgba(255,255,255,0.12)' }} />
-        <ListItem
-          onClick={handleLogout}
-          component="div"
-          sx={{
-            borderRadius: 2,
-            cursor: 'pointer',
-            '&:hover': {
-              backgroundColor: 'rgba(255,255,255,0.08)',
-            },
-          }}
-        >
-          <ListItemIcon sx={{ color: 'white', minWidth: 40 }}>
-            <LogoutIcon />
-          </ListItemIcon>
-          <ListItemText 
-            primary="Logout" 
-            sx={{ 
-              '& .MuiListItemText-primary': { 
-                fontWeight: 500,
-                fontSize: '0.875rem',
-              } 
-            }} 
-          />
+            <ListItemText primary="Logout" />
+          </ListItemButton>
         </ListItem>
       </List>
-    </div>
+    </Box>
   );
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#f8fafc' }}>
-      <CssBaseline />
-      <AppBar
-        position="fixed"
-        elevation={0}
-        sx={{
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
-          ml: { sm: `${drawerWidth}px` },
-          bgcolor: 'white',
-          borderBottom: '1px solid',
-          borderColor: 'divider',
-        }}
-      >
-        <Toolbar sx={{ justifyContent: 'flex-end', px: { xs: 3, lg: 6 } }}>
-          <IconButton color="inherit" onClick={handleLogout}>
-            <LogoutIcon sx={{ color: 'text.primary' }} />
-          </IconButton>
-        </Toolbar>
-      </AppBar>
-
+    <Box sx={{ display: 'flex' }}>
       <Box
         component="nav"
-        sx={{
-          width: { sm: drawerWidth },
-          flexShrink: { sm: 0 },
-        }}
+        sx={{ width: 240, flexShrink: 0 }}
       >
         <Drawer
           variant="permanent"
           sx={{
-            display: { xs: 'none', sm: 'block' },
-            '& .MuiDrawer-paper': {
-              boxSizing: 'border-box',
-              width: drawerWidth,
-              bgcolor: '#1e293b',
+            '& .MuiDrawer-paper': { 
+              boxSizing: 'border-box', 
+              width: 240,
+              bgcolor: 'primary.dark',
               color: 'white',
-              borderRight: 'none',
             },
           }}
           open
@@ -172,21 +139,17 @@ const DashboardLayout = ({ children }) => {
           {drawer}
         </Drawer>
       </Box>
-
       <Box
         component="main"
         sx={{
           flexGrow: 1,
-          p: { xs: 2, sm: 4, md: 6 },
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
+          p: 3,
+          width: `calc(100% - 240px)`,
           minHeight: '100vh',
-          bgcolor: '#f8fafc',
+          bgcolor: 'background.default',
         }}
       >
-        <Toolbar />
-        <Container maxWidth="xl">
-          {children}
-        </Container>
+        {children}
       </Box>
     </Box>
   );
