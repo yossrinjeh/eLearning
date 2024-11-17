@@ -47,7 +47,7 @@ const DashboardLayout = ({ children }) => {
   };
 
   const menuItems = [
-    { text: 'Dashboard', icon: <DashboardIcon />, path: '/', roles: ['admin', 'trainer', 'student'] },
+    { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard', roles: ['admin', 'trainer', 'student'] },
     { text: 'Rooms', icon: <RoomIcon />, path: '/rooms', roles: ['admin'] },
     { text: 'Formations', icon: <FormationIcon />, path: '/formations', roles: ['admin', 'trainer', 'student'] },
     { text: 'Enrollments', icon: <EnrollmentIcon />, path: '/enrollments', roles: ['admin'] },
