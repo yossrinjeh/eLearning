@@ -19,6 +19,7 @@ import TrainersList from './pages/trainers/TrainersList';
 import StudentFormationsList from './pages/student/StudentFormationsList';
 import StudentEvaluationView from './pages/student/StudentEvaluationView';
 import Home from './pages/Home';
+import AboutUs from './pages/AboutUs';
 
 const theme = createTheme({
   palette: {
@@ -219,6 +220,7 @@ const App = () => {
                 </ProtectedRoute>
               }
             />
+            <Route path="/about" element={<AboutUs />} />
           </Routes>
         </Router>
       </ThemeProvider>

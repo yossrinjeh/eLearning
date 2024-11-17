@@ -17,6 +17,8 @@ import {
   InputAdornment,
 } from '@mui/material';
 import { CloudUpload as UploadIcon } from '@mui/icons-material';
+import Navbar from '../../components/Navbar';
+import Footer from '../../components/Footer';
 
 const Register = () => {
   const dispatch = useDispatch();
@@ -101,222 +103,228 @@ const Register = () => {
   };
 
   return (
-    <Container 
-      component="main" 
-      maxWidth="xs" 
-      sx={{ 
-        width: '100%',
-        pt: 8,
-        pb: 4
-      }}
-    >
-      <Paper 
-        elevation={3} 
-        sx={{ 
-          p: 4,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          borderRadius: 2,
-        }}
-      >
-        <Typography component="h1" variant="h5" align="center" gutterBottom>
-          Sign Up
-        </Typography>
-
-        <Tabs 
-          value={activeTab} 
-          onChange={handleTabChange} 
-          sx={{ mb: 3, borderBottom: 1, borderColor: 'divider', width: '100%' }}
+    <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <Navbar />
+      <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', py: 8 }}>
+        <Container 
+          component="main" 
+          maxWidth="xs" 
+          sx={{ 
+            width: '100%',
+            pt: 8,
+            pb: 4
+          }}
         >
-          <Tab 
-            label="Student" 
+          <Paper 
+            elevation={3} 
             sx={{ 
-              textTransform: 'none',
-              fontWeight: 'medium',
-              flex: 1
-            }} 
-          />
-          <Tab 
-            label="Trainer" 
-            sx={{ 
-              textTransform: 'none',
-              fontWeight: 'medium',
-              flex: 1
-            }} 
-          />
-        </Tabs>
-
-        {error && <Alert severity="error" sx={{ width: '100%', mb: 2 }}>{error.message}</Alert>}
-        
-        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1, width: '100%' }}>
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                required
-                fullWidth
-                name="firstname"
-                label="First Name"
-                value={formData.firstname}
-                onChange={handleChange}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                required
-                fullWidth
-                name="lastname"
-                label="Last Name"
-                value={formData.lastname}
-                onChange={handleChange}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                required
-                fullWidth
-                name="email"
-                label="Email Address"
-                type="email"
-                value={formData.email}
-                onChange={handleChange}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                value={formData.password}
-                onChange={handleChange}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                required
-                fullWidth
-                name="password_confirmation"
-                label="Confirm Password"
-                type="password"
-                value={formData.password_confirmation}
-                onChange={handleChange}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                required
-                fullWidth
-                name="phone"
-                label="Phone Number"
-                value={formData.phone}
-                onChange={handleChange}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                required
-                fullWidth
-                name="address"
-                label="Address"
-                multiline
-                rows={2}
-                value={formData.address}
-                onChange={handleChange}
-              />
-            </Grid>
-
-            {/* Trainer specific fields */}
-            {activeTab === 1 && (
-              <>
-                <Grid item xs={12}>
-                  <TextField
-                    required
-                    fullWidth
-                    name="specialities"
-                    label="Specialities"
-                    value={formData.specialities}
-                    onChange={handleChange}
-                    multiline
-                    rows={2}
-                    helperText="Enter your specialities separated by commas"
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    required
-                    fullWidth
-                    name="experience"
-                    label="Experience"
-                    value={formData.experience}
-                    onChange={handleChange}
-                    multiline
-                    rows={2}
-                    helperText="Describe your professional experience"
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <Button
-                    component="label"
-                    variant="outlined"
-                    startIcon={<UploadIcon />}
-                    sx={{
-                      width: '100%',
-                      py: 1.5,
-                      borderRadius: 2,
-                      borderStyle: 'dashed',
-                    }}
-                  >
-                    Upload CV
-                    <input
-                      type="file"
-                      name="cv_file"
-                      onChange={handleChange}
-                      accept=".pdf,.doc,.docx"
-                      style={{ display: 'none' }}
-                    />
-                  </Button>
-                  {fileName && (
-                    <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
-                      Selected file: {fileName}
-                    </Typography>
-                  )}
-                </Grid>
-              </>
-            )}
-          </Grid>
-
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ 
-              mt: 3, 
-              mb: 2,
-              height: 48,
+              p: 4,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
               borderRadius: 2,
-              textTransform: 'none',
-              fontSize: '1rem',
             }}
-            disabled={loading}
           >
-            {loading ? 'Signing up...' : 'Sign Up'}
-          </Button>
-          <Box sx={{ textAlign: 'center' }}>
-            <Link 
-              to="/login" 
-              style={{ 
-                textDecoration: 'none',
-                color: 'primary.main',
-              }}
+            <Typography component="h1" variant="h5" align="center" gutterBottom>
+              Sign Up
+            </Typography>
+
+            <Tabs 
+              value={activeTab} 
+              onChange={handleTabChange} 
+              sx={{ mb: 3, borderBottom: 1, borderColor: 'divider', width: '100%' }}
             >
-              Already have an account? Sign In
-            </Link>
-          </Box>
-        </Box>
-      </Paper>
-    </Container>
+              <Tab 
+                label="Student" 
+                sx={{ 
+                  textTransform: 'none',
+                  fontWeight: 'medium',
+                  flex: 1
+                }} 
+              />
+              <Tab 
+                label="Trainer" 
+                sx={{ 
+                  textTransform: 'none',
+                  fontWeight: 'medium',
+                  flex: 1
+                }} 
+              />
+            </Tabs>
+
+            {error && <Alert severity="error" sx={{ width: '100%', mb: 2 }}>{error.message}</Alert>}
+            
+            <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1, width: '100%' }}>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    required
+                    fullWidth
+                    name="firstname"
+                    label="First Name"
+                    value={formData.firstname}
+                    onChange={handleChange}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    required
+                    fullWidth
+                    name="lastname"
+                    label="Last Name"
+                    value={formData.lastname}
+                    onChange={handleChange}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    required
+                    fullWidth
+                    name="email"
+                    label="Email Address"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    required
+                    fullWidth
+                    name="password"
+                    label="Password"
+                    type="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    required
+                    fullWidth
+                    name="password_confirmation"
+                    label="Confirm Password"
+                    type="password"
+                    value={formData.password_confirmation}
+                    onChange={handleChange}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    required
+                    fullWidth
+                    name="phone"
+                    label="Phone Number"
+                    value={formData.phone}
+                    onChange={handleChange}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    required
+                    fullWidth
+                    name="address"
+                    label="Address"
+                    multiline
+                    rows={2}
+                    value={formData.address}
+                    onChange={handleChange}
+                  />
+                </Grid>
+
+                {/* Trainer specific fields */}
+                {activeTab === 1 && (
+                  <>
+                    <Grid item xs={12}>
+                      <TextField
+                        required
+                        fullWidth
+                        name="specialities"
+                        label="Specialities"
+                        value={formData.specialities}
+                        onChange={handleChange}
+                        multiline
+                        rows={2}
+                        helperText="Enter your specialities separated by commas"
+                      />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <TextField
+                        required
+                        fullWidth
+                        name="experience"
+                        label="Experience"
+                        value={formData.experience}
+                        onChange={handleChange}
+                        multiline
+                        rows={2}
+                        helperText="Describe your professional experience"
+                      />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Button
+                        component="label"
+                        variant="outlined"
+                        startIcon={<UploadIcon />}
+                        sx={{
+                          width: '100%',
+                          py: 1.5,
+                          borderRadius: 2,
+                          borderStyle: 'dashed',
+                        }}
+                      >
+                        Upload CV
+                        <input
+                          type="file"
+                          name="cv_file"
+                          onChange={handleChange}
+                          accept=".pdf,.doc,.docx"
+                          style={{ display: 'none' }}
+                        />
+                      </Button>
+                      {fileName && (
+                        <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+                          Selected file: {fileName}
+                        </Typography>
+                      )}
+                    </Grid>
+                  </>
+                )}
+              </Grid>
+
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                sx={{ 
+                  mt: 3, 
+                  mb: 2,
+                  height: 48,
+                  borderRadius: 2,
+                  textTransform: 'none',
+                  fontSize: '1rem',
+                }}
+                disabled={loading}
+              >
+                {loading ? 'Signing up...' : 'Sign Up'}
+              </Button>
+              <Box sx={{ textAlign: 'center' }}>
+                <Link 
+                  to="/login" 
+                  style={{ 
+                    textDecoration: 'none',
+                    color: 'primary.main',
+                  }}
+                >
+                  Already have an account? Sign In
+                </Link>
+              </Box>
+            </Box>
+          </Paper>
+        </Container>
+      </Box>
+      <Footer />
+    </Box>
   );
 };
 

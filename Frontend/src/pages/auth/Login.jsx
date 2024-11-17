@@ -11,6 +11,8 @@ import {
   Box,
   Alert,
 } from '@mui/material';
+import Navbar from '../../components/Navbar';
+import Footer from '../../components/Footer';
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -37,69 +39,75 @@ const Login = () => {
   };
 
   return (
-    <Container 
-      component="main" 
-      maxWidth="xs"
-      sx={{ 
-        width: '100%',
-        pt: 8,
-        pb: 4
-      }}
-    >
-      <Paper 
-        elevation={3} 
-        sx={{ 
-          p: 4,
-          width: '100%',
-          mx: 'auto'
-        }}
-      >
-        <Typography component="h1" variant="h5" align="center">
-          Sign In
-        </Typography>
-        {error && <Alert severity="error">{error.message}</Alert>}
-        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="email"
-            label="Email Address"
-            name="email"
-            autoComplete="email"
-            autoFocus
-            value={formData.email}
-            onChange={handleChange}
-          />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label="Password"
-            type="password"
-            id="password"
-            autoComplete="current-password"
-            value={formData.password}
-            onChange={handleChange}
-          />
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
-            disabled={loading}
+    <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <Navbar />
+      <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', py: 8 }}>
+        <Container 
+          component="main" 
+          maxWidth="xs"
+          sx={{ 
+            width: '100%',
+            pt: 8,
+            pb: 4
+          }}
+        >
+          <Paper 
+            elevation={3} 
+            sx={{ 
+              p: 4,
+              width: '100%',
+              mx: 'auto'
+            }}
           >
-            {loading ? 'Signing in...' : 'Sign In'}
-          </Button>
-          <Box sx={{ textAlign: 'center' }}>
-            <Link to="/register" style={{ textDecoration: 'none' }}>
-              {"Don't have an account? Sign Up"}
-            </Link>
-          </Box>
-        </Box>
-      </Paper>
-    </Container>
+            <Typography component="h1" variant="h5" align="center">
+              Sign In
+            </Typography>
+            {error && <Alert severity="error">{error.message}</Alert>}
+            <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="email"
+                label="Email Address"
+                name="email"
+                autoComplete="email"
+                autoFocus
+                value={formData.email}
+                onChange={handleChange}
+              />
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                name="password"
+                label="Password"
+                type="password"
+                id="password"
+                autoComplete="current-password"
+                value={formData.password}
+                onChange={handleChange}
+              />
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                sx={{ mt: 3, mb: 2 }}
+                disabled={loading}
+              >
+                {loading ? 'Signing in...' : 'Sign In'}
+              </Button>
+              <Box sx={{ textAlign: 'center' }}>
+                <Link to="/register" style={{ textDecoration: 'none' }}>
+                  {"Don't have an account? Sign Up"}
+                </Link>
+              </Box>
+            </Box>
+          </Paper>
+        </Container>
+      </Box>
+      <Footer />
+    </Box>
   );
 };
 
