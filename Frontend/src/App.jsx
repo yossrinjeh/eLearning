@@ -18,6 +18,7 @@ import StudentEvaluationsList from './pages/studentEvaluations/StudentEvaluation
 import TrainersList from './pages/trainers/TrainersList';
 import StudentFormationsList from './pages/student/StudentFormationsList';
 import StudentEvaluationView from './pages/student/StudentEvaluationView';
+import Home from './pages/Home';
 
 const theme = createTheme({
   palette: {
@@ -155,10 +156,11 @@ const App = () => {
         <CssBaseline />
         <Router>
           <Routes>
+            <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route
-              path="/"
+              path="/dashboard"
               element={
                 <ProtectedRoute>
                   <Dashboard />
