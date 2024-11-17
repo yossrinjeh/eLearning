@@ -18,6 +18,7 @@ Route::post('login', [AuthController::class, 'login']);
 Route::get('public/formations', [PublicController::class, 'getPublicFormations']);
 Route::get('public/trainers', [PublicController::class, 'getActiveTrainers']);
 Route::get('public/formations/search', [PublicController::class, 'searchFormations']);
+Route::get('public/about-stats', [PublicController::class, 'getAboutUsStats']);
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {

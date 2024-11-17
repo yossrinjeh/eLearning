@@ -9,6 +9,7 @@ const getInitialState = () => {
   return {
     user: user ? JSON.parse(user) : null,
     token: token || null,
+    isAuthenticated: !!token,
     loading: false,
     error: null,
   };
@@ -86,10 +87,12 @@ const authSlice = createSlice({
         state.loading = false;
         state.user = action.payload.user;
         state.token = action.payload.token;
+        state.isAuthenticated = true;
       })
       .addCase(register.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+        state.isAuthenticated = false;
       })
       // Login
       .addCase(login.pending, (state) => {
@@ -100,15 +103,18 @@ const authSlice = createSlice({
         state.loading = false;
         state.user = action.payload.user;
         state.token = action.payload.token;
+        state.isAuthenticated = true;
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+        state.isAuthenticated = false;
       })
       // Logout
       .addCase(logout.fulfilled, (state) => {
         state.user = null;
         state.token = null;
+        state.isAuthenticated = false;
       });
   },
 });

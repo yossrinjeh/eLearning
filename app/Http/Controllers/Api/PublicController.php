@@ -108,4 +108,32 @@ class PublicController extends Controller
 
         return response()->json($formations);
     }
+
+    public function getAboutUsStats()
+    {
+        $stats = [
+            'students' => [
+                'count' => User::where('role', 'student')->where('is_active', true)->count(),
+                'label' => 'Active Students',
+                'icon' => 'student' // You can use this in frontend to show the icon
+            ],
+            'trainers' => [
+                'count' => User::where('role', 'trainer')->where('is_active', true)->count(),
+                'label' => 'Expert Trainers',
+                'icon' => 'trainer'
+            ],
+            'courses' => [
+                'count' => Formation::where('status', '!=', 'cancelled')->count(),
+                'label' => 'Courses',
+                'icon' => 'course'
+            ],
+            'success_rate' => [
+                'count' => '95%',
+                'label' => 'Success Rate',
+                'icon' => 'trophy'
+            ]
+        ];
+
+        return response()->json($stats);
+    }
 } 

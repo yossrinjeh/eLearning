@@ -1,15 +1,44 @@
-import { Box, Container, Grid, Typography, Card, CardContent, Avatar } from '@mui/material';
+import { useState, useEffect } from 'react';
+import { Box, Container, Grid, Typography, Card, CardContent, Avatar, CircularProgress } from '@mui/material';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { School, GroupAdd, Timeline, EmojiEvents } from '@mui/icons-material';
+import api from '../services/api';
+import endpoints from '../config/endpoints';
 
 const AboutUs = () => {
-  const stats = [
-    { icon: <School />, value: '1000+', label: 'Active Students' },
-    { icon: <GroupAdd />, value: '50+', label: 'Expert Trainers' },
-    { icon: <Timeline />, value: '200+', label: 'Courses' },
-    { icon: <EmojiEvents />, value: '95%', label: 'Success Rate' },
-  ];
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await api.get(endpoints.public.aboutStats);
+        setStats(response.data);
+      } catch (error) {
+        console.error('Error fetching stats:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchStats();
+  }, []);
+
+  // Icon mapping
+  const getIcon = (iconName) => {
+    switch (iconName) {
+      case 'student':
+        return <School />;
+      case 'trainer':
+        return <GroupAdd />;
+      case 'course':
+        return <Timeline />;
+      case 'trophy':
+        return <EmojiEvents />;
+      default:
+        return <School />;
+    }
+  };
 
   const team = [
     {
@@ -86,25 +115,31 @@ const AboutUs = () => {
       {/* Stats Section */}
       <Box sx={{ bgcolor: 'background.default', py: 8 }}>
         <Container maxWidth="lg">
-          <Grid container spacing={4}>
-            {stats.map((stat, index) => (
-              <Grid item xs={6} md={3} key={index}>
-                <Card sx={{ height: '100%', textAlign: 'center' }}>
-                  <CardContent>
-                    <Box sx={{ color: 'primary.main', mb: 2 }}>
-                      {stat.icon}
-                    </Box>
-                    <Typography variant="h4" component="div" fontWeight="bold" gutterBottom>
-                      {stat.value}
-                    </Typography>
-                    <Typography color="text.secondary">
-                      {stat.label}
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
+          {loading ? (
+            <Box display="flex" justifyContent="center" p={4}>
+              <CircularProgress />
+            </Box>
+          ) : (
+            <Grid container spacing={4}>
+              {stats && Object.entries(stats).map(([key, stat], index) => (
+                <Grid item xs={6} md={3} key={index}>
+                  <Card sx={{ height: '100%', textAlign: 'center' }}>
+                    <CardContent>
+                      <Box sx={{ color: 'primary.main', mb: 2 }}>
+                        {getIcon(stat.icon)}
+                      </Box>
+                      <Typography variant="h4" component="div" fontWeight="bold" gutterBottom>
+                        {stat.count}
+                      </Typography>
+                      <Typography color="text.secondary">
+                        {stat.label}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+          )}
         </Container>
       </Box>
 

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link as RouterLink, useLocation, useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
 import {
   AppBar,
   Box,
@@ -12,9 +13,13 @@ import {
   MenuItem,
   useScrollTrigger,
   Slide,
+  Avatar,
+  Tooltip,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import SchoolIcon from '@mui/icons-material/School';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import { logout } from '../features/auth/authSlice';
 
 function HideOnScroll({ children }) {
   const trigger = useScrollTrigger();
@@ -30,11 +35,18 @@ const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const { isAuthenticated, user } = useSelector((state) => state.auth);
+  const [anchorElUser, setAnchorElUser] = useState(null);
+  const dispatch = useDispatch();
 
   // Check if we're on the home page
   const isHomePage = location.pathname === '/';
 
   const pages = [
+    { 
+      title: isAuthenticated ? 'Dashboard' : 'Home',
+      path: isAuthenticated ? '/dashboard' : '/',
+    },
     { title: 'About Us', path: '/about' },
     { title: 'Formations', path: 'formations' },
     { title: 'Trainers', path: 'trainers' },
@@ -71,6 +83,30 @@ const Navbar = () => {
 
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
+  };
+
+  const handleOpenUserMenu = (event) => {
+    setAnchorElUser(event.currentTarget);
+  };
+
+  const handleCloseUserMenu = () => {
+    setAnchorElUser(null);
+  };
+
+  const handleDashboardClick = () => {
+    handleCloseUserMenu();
+    const dashboardRoute = user?.role === 'admin' 
+      ? '/dashboard' 
+      : user?.role === 'trainer' 
+        ? '/dashboard' 
+        : '/';
+    navigate(dashboardRoute);
+  };
+
+  const handleLogout = async () => {
+    await dispatch(logout());
+    handleCloseUserMenu();
+    navigate('/');
   };
 
   return (
@@ -220,43 +256,94 @@ const Navbar = () => {
 
             {/* Auth buttons */}
             <Box sx={{ flexGrow: 0, display: 'flex', gap: 1 }}>
-              <Button
-                component={RouterLink}
-                to="/login"
-                variant="text"
-                sx={{
-                  color: isHomePage 
-                    ? (isScrolled ? 'text.primary' : 'white')
-                    : 'text.primary',
-                  '&:hover': {
-                    color: isHomePage 
-                      ? (isScrolled ? 'primary.main' : 'rgba(255, 255, 255, 0.8)')
-                      : 'primary.main',
-                  },
-                }}
-              >
-                Login
-              </Button>
-              <Button
-                component={RouterLink}
-                to="/register"
-                variant="contained"
-                sx={{
-                  bgcolor: isHomePage 
-                    ? (isScrolled ? 'primary.main' : 'white')
-                    : 'primary.main',
-                  color: isHomePage 
-                    ? (isScrolled ? 'white' : 'primary.main')
-                    : 'white',
-                  '&:hover': {
-                    bgcolor: isHomePage 
-                      ? (isScrolled ? 'primary.dark' : 'rgba(255, 255, 255, 0.9)')
-                      : 'primary.dark',
-                  },
-                }}
-              >
-                Sign Up
-              </Button>
+              {isAuthenticated ? (
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <Tooltip title="Account settings">
+                    <IconButton onClick={handleOpenUserMenu}>
+                      <Avatar 
+                        sx={{ 
+                          width: 32, 
+                          height: 32,
+                          bgcolor: isHomePage 
+                            ? (isScrolled ? 'primary.main' : 'white')
+                            : 'primary.main',
+                          color: isHomePage 
+                            ? (isScrolled ? 'white' : 'primary.main')
+                            : 'white',
+                        }}
+                      >
+                        {user?.firstname?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase()}
+                      </Avatar>
+                    </IconButton>
+                  </Tooltip>
+                  <Menu
+                    sx={{ mt: '45px' }}
+                    id="menu-appbar"
+                    anchorEl={anchorElUser}
+                    anchorOrigin={{
+                      vertical: 'top',
+                      horizontal: 'right',
+                    }}
+                    keepMounted
+                    transformOrigin={{
+                      vertical: 'top',
+                      horizontal: 'right',
+                    }}
+                    open={Boolean(anchorElUser)}
+                    onClose={handleCloseUserMenu}
+                  >
+                    <MenuItem onClick={handleDashboardClick}>
+                      <Typography textAlign="center">Dashboard</Typography>
+                    </MenuItem>
+                    <MenuItem onClick={handleCloseUserMenu}>
+                      <Typography textAlign="center">Profile</Typography>
+                    </MenuItem>
+                    <MenuItem onClick={handleLogout}>
+                      <Typography textAlign="center">Logout</Typography>
+                    </MenuItem>
+                  </Menu>
+                </Box>
+              ) : (
+                <>
+                  <Button
+                    component={RouterLink}
+                    to="/login"
+                    variant="text"
+                    sx={{
+                      color: isHomePage 
+                        ? (isScrolled ? 'text.primary' : 'white')
+                        : 'text.primary',
+                      '&:hover': {
+                        color: isHomePage 
+                          ? (isScrolled ? 'primary.main' : 'rgba(255, 255, 255, 0.8)')
+                          : 'primary.main',
+                      },
+                    }}
+                  >
+                    Login
+                  </Button>
+                  <Button
+                    component={RouterLink}
+                    to="/register"
+                    variant="contained"
+                    sx={{
+                      bgcolor: isHomePage 
+                        ? (isScrolled ? 'primary.main' : 'white')
+                        : 'primary.main',
+                      color: isHomePage 
+                        ? (isScrolled ? 'white' : 'primary.main')
+                        : 'white',
+                      '&:hover': {
+                        bgcolor: isHomePage 
+                          ? (isScrolled ? 'primary.dark' : 'rgba(255, 255, 255, 0.9)')
+                          : 'primary.dark',
+                      },
+                    }}
+                  >
+                    Sign Up
+                  </Button>
+                </>
+              )}
             </Box>
           </Toolbar>
         </Container>

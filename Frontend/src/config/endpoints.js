@@ -83,6 +83,7 @@ export const endpoints = {
     formations: `${BASE_URL}/public/formations`,
     trainers: `${BASE_URL}/public/trainers`,
     searchFormations: `${BASE_URL}/public/formations/search`,
+    aboutStats: `${BASE_URL}/public/about-stats`,
   },
 };
 

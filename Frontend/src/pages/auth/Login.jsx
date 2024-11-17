@@ -34,7 +34,21 @@ const Login = () => {
     e.preventDefault();
     const result = await dispatch(login(formData));
     if (!result.error) {
-      navigate('/');
+      const role = result.payload.user.role;
+      
+      switch (role) {
+        case 'admin':
+          navigate('/dashboard');
+          break;
+        case 'trainer':
+          navigate('/dashboard');
+          break;
+        case 'student':
+          navigate('/');
+          break;
+        default:
+          navigate('/');
+      }
     }
   };
 
