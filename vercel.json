@@ -36,9 +36,7 @@
       "env": {
         "INSTALL_OPENSSL": "true"
       }
-    },
-    "hooks": {
-      "build": "bash -c 'apt-get update && apt-get install -y openssl libssl-dev'"
     }
+ 
   }
   
