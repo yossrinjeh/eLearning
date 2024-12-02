@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: 'https://elearning.test/api',
   headers: {
     'Content-Type': 'application/json',
   },
